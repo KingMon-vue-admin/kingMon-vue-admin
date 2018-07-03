@@ -56,52 +56,6 @@
           <span>{{scope.row.id}}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="App名称" width="350">
-        <template slot-scope="scope">
-          <template v-if="scope.row.edit">
-            <el-input class="edit-input" size="small" v-model="scope.row.name"></el-input>
-          </template>
-          <span v-else>{{scope.row.name}}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column class-name="status-col" label="账户状态" width="110">
-        <template slot-scope="scope">
-          <div v-if="!scope.row.edit">
-            <el-tag v-if="scope.row.status == 1">开启</el-tag>
-            <el-tag v-else type="danger">关闭</el-tag>
-          </div>
-          <el-switch v-else v-model="scope.row.switch"></el-switch>
-        </template>
-      </el-table-column>
-
-      <el-table-column min-width="100px" label="App键">
-        <template slot-scope="scope">
-          <template v-if="scope.row.edit">
-            <el-input class="edit-input" size="small" v-model="scope.row.appKey"></el-input>
-          </template>
-          <span v-else>{{ scope.row.appKey }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column min-width="100px" label="App排列顺序">
-        <template slot-scope="scope">
-          <template v-if="scope.row.edit">
-            <el-input class="edit-input" size="small" v-model="scope.row.disIndex"></el-input>
-          </template>
-          <span v-else>{{ scope.row.disIndex }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column min-width="100px" label="评论">
-        <template slot-scope="scope">
-          <template v-if="scope.row.edit">
-            <el-input class="edit-input" size="small" v-model="scope.row.remark"></el-input>
-          </template>
-          <span v-else>{{ scope.row.remark }}</span>
-        </template>
-      </el-table-column>
-
       <el-table-column align="center" label="Actions" width="300">
         <template slot-scope="scope">
           <el-button v-if="scope.row.edit" type="success" @click="confirmEdit(scope.row)" size="small" icon="el-icon-circle-check-outline">确认</el-button>
@@ -286,7 +240,7 @@
       },
       pullData(page = 1, rows = 12) {
         this.listLoading = true;
-        this.$store.dispatch('loadAuthAppListRoles', {
+        this.$store.dispatch('loadAuthAppList', {
           page: page,
           rows: rows
         }).then(req => {
@@ -294,7 +248,7 @@
           this.updataLists()
           this.listLoading = false
         }).catch(() => {
-          this.listLoading = false
+
         })
       }
     },

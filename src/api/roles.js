@@ -28,7 +28,7 @@ export function SearchAuthApps(params) {
 // 获取所有APP权限
 export function loadAuthAppLists(params) {
   const data = requestMethod({
-    params
+    ...params
   })
   return request({
     url: 'auth/authApp/loadAuthAppList',

@@ -2,21 +2,32 @@
   <div class="app-container">
     <div class="filter-container">
       <!--  -->
-      <el-dialog v-el-drag-dialog title="角色设置" :visible.sync="dialogTableVisible">
-        <el-form ref="form" :model="form" label-width="100px" style="width: 90%;margin: auto;">
-          <p>当前用户名称：{{form.account}}</p>
-          <p>当前用户I D：{{form.id}}</p>
+      <el-dialog v-el-drag-dialog title="用户角色设置" :visible.sync="dialogTableVisible">
+        <el-form ref="form" :model="form" label-width="120px" style="width: 90%;margin: auto;">
+          <el-form-item label="当前用户名称：">
+           <b>{{form.account}}</b>
+          </el-form-item>
+          <el-form-item label="当前用户ID：">
+           <b>{{form.id}}</b>
+          </el-form-item>
           <!-- {{form}} -->
-          <el-form-item label="选择App">
+          <el-form-item label="选择App：">
             <el-select class="kingMon-right" v-model="form.rules" @change="searchAppRoles" clearable style="width: 160px;" placeholder="选择App类型">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
-
+          <el-form-item label="角色操作：">
+           <el-transfer style="text-align: left; display:block;margin: auto; " v-model="value3" filterable :left-default-checked="[2, 3]"
+            :right-default-checked="[1]" :render-content="renderFunc" :titles="['未拥有角色', '已拥有角色']" :button-texts="['删除角色', '增加角色']"
+            @change="handleChange" :data="userRolesConfig.all">
+            <!-- <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
+            <el-button class="transfer-footer" slot="right-footer" size="small">操作</el-button> -->
+          </el-transfer>
+          </el-form-item>
+          
           <!-- 所有角色 -->
-          <el-form-item label="已拥有角色">
-            <!-- userRoles[scope.row.defaultRole] -->
+          <!-- <el-form-item label="已拥有角色">
             <el-tag v-if="userRolesConfig.yes != undefined" v-for="tag in userRolesConfig.yes" :key="tag.name" closable :type="tag.type"
               @close="handleClose(tag)">
               {{tag.name}}
@@ -25,22 +36,15 @@
             <span v-if="userRolesConfig.yes != undefined && userRolesConfig.yes.length == 0">该用户暂无角色</span>
           </el-form-item>
           <el-form-item label="未拥有角色">
-            <!-- userRoles[scope.row.defaultRole] -->
             <el-tag v-for="tag in userRolesConfig.no" :key="tag.name" :type="tag.type">
               <span @click="addSelf(tag)">{{tag.name}}</span>
             </el-tag>
             <span v-if="userRolesConfig.yes == undefined">请先选择App</span>
             <span v-if="userRolesConfig.no != undefined && userRolesConfig.no.length == 0">该App下暂无角色</span>
-          </el-form-item>
-          <el-form-item label="用户开启状态">
-            <el-switch v-model="form.status"></el-switch>
-          </el-form-item>
-          <el-form-item label="用户描述">
-            <el-input type="textarea" v-model="form.description"></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
-            <el-button type="primary" @click="addStatic">立即创建</el-button>
-            <el-button @click="dialogTableVisible = false">取消</el-button>
+            <el-button type="primary" style="margin-top: 24px;" @click="dialogTableVisible = false">关闭</el-button>
+            <!-- <el-button @click="dialogTableVisible = false">关闭</el-button> -->
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -88,7 +92,7 @@
       <el-table-column class-name="status-col" label="账户过期" width="100">
         <template slot-scope="scope">
           <div v-if="!scope.row.edit">
-            <el-tag v-if="scope.row.accountExpired == 1">未过期</el-tag>
+            <el-tag v-if="scope.row.accountExpired == 0">未过期</el-tag>
             <el-tag v-else type="danger">已过期</el-tag>
           </div>
           <el-switch v-else v-model="scope.row.accountExpired"></el-switch>
@@ -97,7 +101,7 @@
       <el-table-column class-name="status-col" label="是否上锁" width="100">
         <template slot-scope="scope">
           <div v-if="!scope.row.edit">
-            <el-tag v-if="scope.row.accountLocked == 1">未上锁</el-tag>
+            <el-tag v-if="scope.row.accountLocked == 0">未上锁</el-tag>
             <el-tag v-else type="danger">已上锁</el-tag>
           </div>
           <el-switch v-else v-model="scope.row.accountLocked"></el-switch>
@@ -117,7 +121,7 @@
             <el-switch v-model="scope.row.credentialsExpired"></el-switch>
           </template>
           <div v-if="!scope.row.edit">
-            <el-tag v-if="scope.row.credentialsExpired == 1">未过期</el-tag>
+            <el-tag v-if="scope.row.credentialsExpired == 0">未过期</el-tag>
             <el-tag v-else type="danger">已过期</el-tag>
           </div>
         </template>
@@ -192,8 +196,8 @@
       </el-table-column>
 
     </el-table>
-    <el-pagination style="margin-top: 24px;" background layout="prev, pager, next" :total="1000" @size-change="handleSizeChange"
-      @current-change="handleCurrentChange" :current-page="listQuery.page" :page-size="listQuery.limit">
+    <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage2"
+      :page-sizes="[12, 15, 20, 25]" layout="sizes, prev, pager, next" :total="total" style="margin-top: 24px;">
     </el-pagination>
   </div>
 </template>
@@ -212,6 +216,12 @@
     },
     data() {
       return {
+        value3: [],
+        renderFunc(h, option) { return <span> { option.label } </span>;},
+        // 分页总和
+        total: 0,
+        // 默认分页
+        currentPage2: 1,
         // 用户角色管理
         userRolesConfig: {},
         // 角色表
@@ -250,15 +260,42 @@
     },
     created() {
       this.upApp()
+      console.log(this.data, " search")
     },
     computed: {
 
     },
     methods: {
+      handleChange(value, direction, movedKeys) {
+        if(direction == 'left'){
+          this.$store.dispatch('removeRoleFromUser', {
+            roleIds: movedKeys.toString(),
+            userId: this.form.id
+          }).then(() => {
+            this.searchAppRoles()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+          }).catch(err => {})
+        }else{
+          // 增加角色
+          this.$store.dispatch('addRolesToUser', {
+            roleIds: movedKeys.toString(),
+            userId: this.form.id
+          }).then(() => {
+            this.searchAppRoles()
+            this.$message({
+              type: 'success',
+              message: '增加角色成功!'
+            });
+        })
+        }
+      },
       // 设置用户权限极状态
       ViewUpdateSysPosition(val) {
         val.userIds = val.id
-        val.status = (val.status ? 1 : 2)
+        val.status = (val.status ? 0 : 1)
         this.$store.dispatch('updateSysPosition', val).then(s => {
           this.$message({
             type: 'success',
@@ -270,7 +307,7 @@
         })
       },
       // 查询所有权限
-      upApp() {
+      upApp(page = 1, rows = 12) {
         // 查询用户
         this.$store.dispatch('loadOrgListX').then(() => {
           this.orgListSelect = this.$store.state.userManager.sysOrgs.data.map(row => {
@@ -282,7 +319,11 @@
           for (var value of this.$store.state.userManager.sysOrgs.data) {
             this.orgList["'" + (value.orgTreeCode || 0) + "'"] = value.name
           }
-          this.$store.dispatch('loadAuthUserList', 1).then(() => {
+          this.$store.dispatch('loadAuthUserList', {
+            page: page,
+            rows: rows
+          }).then(req => {
+            this.total = req.data.total
             this.$store.dispatch('loadAuthRoleList', {
               params: 1,
             }).then(() => {
@@ -310,11 +351,14 @@
 
       },
       // 分页改动
-      handleCurrentChange() {
-
+      handleCurrentChange(val) {
+        this.pages = val
+        this.upApp(this.pages, this.rows)
       },
-      handleSizeChange() {
-
+      // 改动总页数
+      handleSizeChange(val) {
+        this.rows = val
+        this.upApp(this.pages, this.rows)
       },
       // 单个用户增加角色
       addSelf(tag) {
@@ -363,12 +407,12 @@
             message: '已取消删除'
           });
         });
-
       },
       // 展开查看
       opens(s) {
-        this.$store.dispatch('loadAuthAppList', 1).then(() => {
-          this.options = this.$store.state.roles.AppList.map(view => {
+        this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
+          console.log(req.data.data.dataSet.rows)
+          this.options = req.data.data.dataSet.rows.map(view => {
             return {
               value: view.appKey,
               label: view.name
@@ -380,7 +424,6 @@
         }).catch(() => {
           alert("error")
         })
-
       },
       // 查询
       searchAppRoles() {
@@ -389,6 +432,18 @@
           appKey: this.form.rules,
         }).then(req => {
           this.userRolesConfig = req
+          let alls = [...req.yes, ...req.no]
+          this.userRolesConfig.all = alls.map(row => {
+            return {
+              id: row.id,
+              key: row.id,
+              label: row.name,
+              roleCode: row.roleCode
+            }
+          })
+          this.value3 = req.yes.map(row => {
+            return row.id
+          })
         }).catch(err => {
           console.log(err)
         })
@@ -515,6 +570,11 @@
       }
     },
     watch: {
+      dialogTableVisible(){
+        this.value3 = []
+        this.userRolesConfig = {}
+        this.form.rules = ""
+      },
       checkboxVal(valArr) {
         this.formThead = this.formTheadOptions.filter(
           i => valArr.indexOf(i) >= 0

@@ -5,6 +5,9 @@ import {
   deletAuthRoles
 } from '@/api/userRoles'
 import {
+  loadAuthAppLists
+} from '@/api/roles'
+import {
   promises
 } from 'fs'
 const errorLog = {
@@ -17,15 +20,28 @@ const errorLog = {
     }
   },
   actions: {
+    // 加载应用表
+    loadAuthAppListApp({
+      commit
+    }, AppsList) {
+      return new Promise((resolve, reject) => {
+        loadAuthAppLists(AppsList).then(req => {
+          console.log(req)
+          commit('UPDATA_APP_LIST', req.data.data.dataSet.rows)
+          resolve(req)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
     // 加载权限表
     loadAuthRoleList({
       commit
     }, AppsList) {
       return new Promise((resolve, reject) => {
         loadAuthRoleLists(AppsList).then(req => {
-          console.log(req.data.rows)
           commit('UPDATA_APP_USER', req.data.rows)
-          resolve()
+          resolve(req.data.rows)
         }).catch(error => {
           reject(error)
         })

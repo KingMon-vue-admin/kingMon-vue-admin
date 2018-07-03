@@ -9,7 +9,8 @@ import {
   setUserStatuss,
   loadRoleDataSetForUserAssigns,
   removeRoleFromUsers,
-  addRolesToUsers
+  addRolesToUsers,
+  loadAuthAppLists
 } from '@/api/userManager'
 import {
   promises
@@ -32,6 +33,12 @@ const errorLog = {
     }
   },
   actions: {
+    // 查询应用
+    async loadAuthAppListManger({
+      commit
+    }, Parm) {
+      return await loadAuthAppLists(Parm)
+    },
     // 设置用户状态
     async updateSysPosition({
       commit
@@ -48,7 +55,9 @@ const errorLog = {
     async loadAuthUserList({
       commit
     }, AppsList) {
-      commit('UPDATA_APP_USERX', (await loadAuthUserLists(AppsList)).data.rows)
+      const response = await loadAuthUserLists(AppsList)
+      commit('UPDATA_APP_USERX', response.data.rows)
+      return response
     },
     async loadRoleDataSetForUserAssign({
       commit

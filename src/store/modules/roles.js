@@ -19,19 +19,12 @@ const errorLog = {
   },
   actions: {
     // 加载权限表
-    loadAuthAppList({
+    async loadAuthAppListRoles({
       commit
     }, AppsList) {
-      return new Promise((resolve, reject) => {
-        loadAuthAppLists(AppsList.params).then(req => {
-          console.log(req)
-          commit('UPDATA_APP_LIST', req.data.data.dataSet.rows)
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
-      // commit('UPDATA_APP_LIST', Apps)
+      const response = await loadAuthAppLists(AppsList)
+      commit('UPDATA_APP_LIST', response.data.data.dataSet.rows)
+      return response
     },
     // 更新某一个数据
     updateAuthApp({

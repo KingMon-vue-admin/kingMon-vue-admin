@@ -1,51 +1,50 @@
 import request from '@/utils/request'
 import requestMethod from '@/utils/requestMethod.js'
-
-// 加载所有权限
-export function loadAuthPermissionLists(params) {
+// 获取权限列表
+export function loadAuthModuleLists(params) {
+  console.log(params)
   const data = requestMethod({
     ...params
   })
   return request({
-    url: 'auth/authPermission/loadAuthPermissionList',
+    url: 'auth/authModule/loadAuthModuleList',
+    method: 'post',
+    data
+  })
+}
+
+// 修改权限信息
+export function UpdateAuthModules(params) {
+  const data = requestMethod({
+    ...params
+  })
+  return request({
+    url: 'auth/authModule/updateAuthModule',
     method: 'POST',
     data
   })
 }
 
-// 修改所有权限
-export function updatePermissions(params) {
+// 删除权限信息
+export function deletAuthModules(params) {
   const data = requestMethod({
     ...params
   })
   return request({
-    url: 'auth/authPermission/updatePermission',
+    url: 'auth/authModule/deletAuthModule',
     method: 'POST',
     data
   })
 }
 
-// 增加权限
-export function addPermissions(params) {
+// 添加权限
+export function addAuthModules(params) {
   const data = requestMethod({
     ...params
   })
   return request({
-    url: 'auth/authPermission/addPermission',
+    url: 'auth/authModule/addAuthModule',
     method: 'POST',
     data
   })
 }
-
-// 增加权限
-export function deletAuthPermissions(params) {
-  const data = requestMethod({
-    ...params
-  })
-  return request({
-    url: 'auth/authPermission/deletAuthPermission',
-    method: 'POST',
-    data
-  })
-}
-

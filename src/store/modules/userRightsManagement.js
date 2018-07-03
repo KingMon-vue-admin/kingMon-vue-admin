@@ -1,38 +1,30 @@
 import {
-  loadAuthModuleLists,
-  UpdateAuthModules,
-  deletAuthModules,
-  addAuthModules
-} from '@/api/modules'
-import {
   loadAuthAppLists,
-} from '@/api/roles'
+  updateAuthApps,
+  DeletAuthApps,
+  AddAuthApps,
+  SearchAuthApps
+} from '@/api/userRightsManagement'
 import {
   promises
 } from 'fs';
 const errorLog = {
   state: {
-    ModulesList: []
+    AppList: []
   },
   mutations: {
     UPDATA_APP_LIST: (state, list) => {
-      state.ModulesList = list
+      state.AppList = list
     },
   },
   actions: {
-    async loadAuthAppListModules({
-      commit
-    }, AppsList) {
-      const response = await loadAuthAppLists(AppsList)
-      return response
-    },
     // 加载权限表
-    loadAuthModuleList({
+    loadAuthAppList({
       commit
     }, AppsList) {
       return new Promise((resolve, reject) => {
-        loadAuthModuleLists(AppsList).then(req => {
-          commit('UPDATA_APP_LIST', req.data.rows)
+        loadAuthAppLists(AppsList).then(req => {
+          commit('UPDATA_APP_LIST', req.data.data.dataSet.rows)
           resolve(req)
         }).catch(error => {
           reject(error)
@@ -41,11 +33,11 @@ const errorLog = {
       // commit('UPDATA_APP_LIST', Apps)
     },
     // 更新某一个数据
-    updateAuthModuleChange({
+    updateAuthApp({
       commit
     }, params) {
       return new Promise((resolve, reject) => {
-        UpdateAuthModules(params).then(req => {
+        updateAuthApps(params).then(req => {
           resolve()
         }).catch(error => {
           reject(error)
@@ -53,12 +45,12 @@ const errorLog = {
       })
     },
     // 删除该数据
-    deletAuthModule({
+    DeletAuthApp({
       commit
     }, App) {
       return new Promise((resolve, reject) => {
         console.log(App)
-        deletAuthModules(App).then(req => {
+        DeletAuthApps(App).then(req => {
           resolve()
         }).catch(error => {
           reject(error)
@@ -66,11 +58,24 @@ const errorLog = {
       })
     },
     // 添加权限
-    addAuthModule({
+    AddAuthApp({
       commit
     }, App) {
       return new Promise((resolve, reject) => {
-        addAuthModules(App).then(req => {
+        AddAuthApps(App).then(req => {
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    // 查询App
+    SearchAuthApp({
+      commit
+    }, App) {
+      return new Promise((resolve, reject) => {
+        SearchAuthApps(App).then(req => {
+          commit('UPDATA_APP_LIST', req.data.data.dataSet.rows)
           resolve()
         }).catch(error => {
           reject(error)

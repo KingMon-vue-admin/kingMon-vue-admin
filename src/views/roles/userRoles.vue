@@ -122,8 +122,8 @@
       </el-table-column>
 
     </el-table>
-    <el-pagination style="margin-top: 24px;" background layout="prev, pager, next" :total="1000" @size-change="handleSizeChange"
-      @current-change="handleCurrentChange" :current-page="listQuery.page" :page-size="listQuery.limit">
+    <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage2" :page-sizes="[12, 15, 20, 25]"
+      layout="sizes, prev, pager, next" :total="total" style="margin-top: 24px;">
     </el-pagination>
   </div>
 </template>
@@ -139,16 +139,11 @@
     },
     data() {
       return {
+        // 分页总数
+        total: "",
         nowApps: "",
-        // 分页改动
-        listQuery: {
-          page: 1,
-          limit: 10,
-          importance: undefined,
-          title: undefined,
-          type: undefined,
-          sort: '+id'
-        },
+        // 默认页数
+        currentPage2: 1,
         // 查询
         searchs: {},
         // 新增用戶
@@ -191,13 +186,17 @@
       },
 
       // 查询所有权限
-      upApp() {
+      upApp(page = 1, rows = 12) {
         this.listLoading = true;
         this.$store.dispatch('loadAuthRoleList', {
           params: 1,
-        }).then(() => {
+          page: page,
+          rows: rows
+        }).then(req => {
+          this.total = req.total
           this.updataLists()
-          this.$store.dispatch('loadAuthAppList', 1).then(() => {
+          this.$store.dispatch('loadAuthAppListApp', 1).then(req => {
+            console.log(req)
             this.options = this.$store.state.roles.AppList.map(view => {
               return {
                 value: view.appKey,
@@ -205,7 +204,6 @@
               }
             })
             this.listLoading = false
-            console.log(this.options, "----------test---------------")
           }).catch(() => {
             alert("error")
           })
@@ -214,11 +212,14 @@
         })
       },
       // 分页改动
-      handleCurrentChange() {
-
+      handleCurrentChange(val) {
+        this.pages = val
+        this.upApp(this.pages, this.rows)
       },
-      handleSizeChange() {
-
+      // 改动总页数
+      handleSizeChange(val) {
+        this.rows = val
+        this.upApp(this.pages, this.rows)
       },
       // 查询
       searchApp() {

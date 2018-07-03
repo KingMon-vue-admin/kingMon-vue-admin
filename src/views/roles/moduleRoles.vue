@@ -149,8 +149,8 @@
       </el-table-column>
 
     </el-table>
-    <el-pagination style="margin-top: 24px;" background layout="prev, pager, next" :total="1000" @size-change="handleSizeChange"
-      @current-change="handleCurrentChange" :current-page="listQuery.page" :page-size="listQuery.limit">
+    <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage2"
+      :page-sizes="[12, 15, 20, 25]" layout="sizes, prev, pager, next" :total="total" style="margin-top: 24px;">
     </el-pagination>
   </div>
 </template>
@@ -166,6 +166,12 @@
     },
     data() {
       return {
+        pages: 1,
+        rows: 12,
+        // 分页总和
+        total: 0,
+        // 默认分页
+        currentPage2: 1,
         nowApps: "",
         // 分页改动
         listQuery: {
@@ -206,13 +212,17 @@
     },
     methods: {
       // 选择循环列表
-      test(val) {
+      test(val, page = 1, rows = 12) {
         this.nowApps = val
         this.listLoading = true;
         this.$store.dispatch('loadAuthModuleList', {
           params: 1,
-          appKey: val
-        }).then(() => {
+          appKey: val,
+          page: page,
+          rows: rows
+        }).then(req => {
+          console.log(req)
+          this.total = req.data.total
           this.updataLists()
           this.listLoading = false
         }).catch(() => {
@@ -227,10 +237,13 @@
         } else {
           appKeys = this.nowApps
         }
+        console.log(this.pages, "当前页数")
         this.listLoading = true;
         this.$store.dispatch('loadAuthModuleList', {
           params: 1,
-          appKey: appKeys
+          appKey: appKeys,
+          page: this.pages,
+          rows: this.rows
         }).then(() => {
           this.updataLists()
           this.listLoading = false
@@ -240,8 +253,8 @@
       },
       // 查询所有权限
       upApp() {
-        this.$store.dispatch('loadAuthAppList', 1 ).then(() => {
-          this.options = this.$store.state.roles.AppList.map(view => {
+        this.$store.dispatch('loadAuthAppListModules', 1).then(req => {
+          this.options = req.data.data.dataSet.rows.map(view => {
             return {
               value: view.appKey,
               label: view.name
@@ -253,11 +266,14 @@
         })
       },
       // 分页改动
-      handleCurrentChange() {
-
+      handleCurrentChange(val) {
+        this.pages = val
+        this.test(this.nowApps, this.pages, this.rows)
       },
-      handleSizeChange() {
-
+      // 改动总页数
+      handleSizeChange(val) {
+        this.rows = val
+        this.test(this.nowApps, this.pages, this.rows)
       },
       // 查询
       searchApp() {
@@ -357,7 +373,7 @@
       },
       // 循环更新列表
       updataLists() {
-        console.log(this.$store.state.modules.ModulesList,"console.log")
+        console.log(this.$store.state.modules.ModulesList, "console.log")
         this.tableData = this.$store.state.modules.ModulesList.map(row => {
           return {
             id: row.id,
