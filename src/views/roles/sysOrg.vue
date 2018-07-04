@@ -27,9 +27,11 @@
       <!-- @node-click="moreTrees" -->
       <label style="margin-right: 12px;font-weight: 100;">输入查找节点</label>
       <el-input placeholder="输入关键字进行过滤" v-model="filterText" style="margin-bottom: 12px; width: 350px;">
-        <el-button type="primary" @click="searchsDom">点击搜索</el-button>
       </el-input>
-      <el-tree ref="trees" default-expand-all :filter-node-method="filterNode" :data="tableData" :load="loadNode" lazy show-checkbox>
+      <!-- <el-button type="primary" @click="searchsDom">点击搜索</el-button> -->
+      <el-tree ref="trees" default-expand-all :filter-node-method="filterNode" :data="tableData" :load="loadNode" lazy show-checkbox
+        @node-drag-start="handleDragStart" @node-drag-enter="handleDragEnter" @node-drag-leave="handleDragLeave" @node-drag-over="handleDragOver"
+        @node-drag-end="handleDragEnd" @node-drop="handleDrop" :allow-drop="allowDrop" :allow-drag="allowDrag" draggable default-expand-all>
         <span style="height: 40px;" class="custom-tree-node" slot-scope="{ node, data }">
           <span style="line-height: 40px;">{{ node.label }}</span>
           <span>
@@ -53,30 +55,23 @@
       </el-select> -->
       <!-- <el-button class="kingMon-right" type="primary" icon="el-icon-search" @click="searchApp">搜索</el-button> -->
       <!-- 左侧选择最高权限 -->
-
-      <!-- 图表操作 -->
-      <el-checkbox-group v-model="checkboxVal">
-        <!-- <el-checkbox label="apple">apple</el-checkbox>
-        <el-checkbox label="banana">banana</el-checkbox>
-        <el-checkbox label="orange">orange</el-checkbox> -->
-      </el-checkbox-group>
     </div>
   </div>
 </template>
 
 <script>
-  const defaultFormThead = ["appKey", "status", "remark"];
+  const defaultFormThead = ['appKey', 'status', 'remark']
   import elDragDialog from '@/directive/el-dragDialog' // base on element-ui
 
   export default {
-    name: "sysOrg",
+    name: 'sysOrg',
     directives: {
       elDragDialog
     },
     data() {
       return {
         // 节点查询
-        filterText: "",
+        filterText: 0,
         // 代理节点
         testss: {},
         defaultProps: {
@@ -86,7 +81,7 @@
         treeNow: [-1],
         // 动态子集
         childrens: [],
-        nowApps: "",
+        nowApps: 0,
         // 分页改动
         listQuery: {
           page: 1,
@@ -113,17 +108,49 @@
         tableData: [],
         key: 1, // table key
         formThead: defaultFormThead // 默认表头 Default header
-      };
+      }
     },
     created() {
       this.upApp()
     },
 
     methods: {
+      handleDragStart(node, ev) {
+        console.log('drag start', node)
+      },
+      handleDragEnter(draggingNode, dropNode, ev) {
+        console.log('tree drag enter: ', dropNode.label)
+      },
+      handleDragLeave(draggingNode, dropNode, ev) {
+        console.log('tree drag leave: ', dropNode.label)
+      },
+      handleDragOver(draggingNode, dropNode, ev) {
+        console.log('tree drag over: ', dropNode.label)
+      },
+      handleDragEnd(draggingNode, dropNode, dropType, ev) {
+        console.log('tree drag end: ', dropNode && dropNode.label, dropType)
+      },
+      handleDrop(draggingNode, dropNode, dropType, ev) {
+        console.log('tree drop: ', dropNode.label, dropType)
+      },
+      allowDrop(draggingNode, dropNode, type) {
+        if (dropNode.data.label === '二级 3-1') {
+          return type !== 'inner'
+        } else {
+          return true
+        }
+      },
+      allowDrag(draggingNode) {
+        return draggingNode.data.label.indexOf('三级 3-2-2') === -1
+      },
+      // 点击搜索
+      searchsDom() {
+
+      },
       // 节点内查找
       filterNode(value, data) {
-        if (!value) return true;
-        return data.label.indexOf(value) !== -1;
+        if (!value) return true
+        return data.label.indexOf(value) !== -1
       },
       // 删除节点
       deletDom(data) {
@@ -138,18 +165,18 @@
             this.$message({
               type: 'success',
               message: '删除成功!'
-            });
+            })
             this.upApp()
           })
         }).catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
-          });
-        });
+          })
+        })
       },
       append(data) {
-        this.dialogTableVisible = true;
+        this.dialogTableVisible = true
         this.testss = data
       },
       test() {
@@ -162,8 +189,8 @@
           this.$message({
             type: 'success',
             message: '增加成功!'
-          });
-          this.dialogTableVisible = false;
+          })
+          this.dialogTableVisible = false
           this.upApp()
         }).catch(() => {})
       },
@@ -171,10 +198,9 @@
       loadNode(node, resolve) {
         console.log(node)
         this.$store.dispatch('loadMorex', {
-          id: (node.data.length == 0 ? 1 : node.data.id),
+          id: (node.data.length === 0 ? 1 : node.data.id)
         }).then(() => {
-          // this.addDataLists(val)
-          let nodes = this.$store.state.sysOrg.Nows.map(row => {
+          const nodes = this.$store.state.sysOrg.Nows.map(row => {
             return {
               id: row.id,
               label: row.name,
@@ -183,41 +209,23 @@
           })
           this.listLoading = false
           if (node.level === 0) {
-            return resolve();
+            return resolve()
           } else {
-            return resolve(nodes);
+            return resolve(nodes)
           }
-        }).catch(() => {})
-      },
-      // 下级查询
-      moreTrees(val) {
-        return
-        console.log(val)
-        this.listLoading = true;
-        this.$store.dispatch('loadMore', {
-          id: val.id,
-        }).then(() => {
-          // this.addDataLists(val)
-          val.children = this.$store.state.sysOrg.Nows.map(row => {
-            return {
-              id: row.id,
-              label: row.name,
-              parentId: row.parentId
-            }
-          })
-          console.log(val, this.tableData)
-          this.listLoading = false
         }).catch(() => {})
       },
       // 查询所有权限
       upApp() {
-        this.listLoading = true;
+        this.listLoading = true
         this.$store.dispatch('loadChildSysOrg', {
-          id: -1,
+          id: -1
         }).then(() => {
           this.updataLists()
           this.listLoading = false
-        }).catch(() => {})
+        }).catch(() => {
+
+        })
       },
       // 循环更新列表
       updataLists() {
@@ -227,12 +235,14 @@
             label: row.name
           }
         })
-      },
-      
+      }
     },
     watch: {
+      filterText(val) {
+        this.$refs.trees.filter(val)
+      }
     }
-  };
+  }
 
 </script>
 <style scoped lang="scss">

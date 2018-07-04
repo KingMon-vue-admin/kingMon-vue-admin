@@ -52,7 +52,14 @@ export default {
     exportZip: 'Export Zip',
     theme: '换肤',
     clipboardDemo: 'Clipboard',
-    i18n: '国际化'
+    i18n: '国际化',
+    AppAuthorityManagement: 'App权限管理',
+    ModuleManagement: '模块管理',
+    RoleManagement: '角色管理',
+    userManagement: '用户管理',
+    OrganizationManagement: '组织机构管理',
+    AuthorityManagement: '权限管理',
+    PermissionsSettings: '权限设置'
   },
   navbar: {
     logOut: '退出登录',

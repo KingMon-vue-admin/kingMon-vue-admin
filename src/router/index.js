@@ -78,17 +78,17 @@ export const asyncRouterMap = [
     // redirect: 'noredirect',
     name: 'roles',
     meta: {
-      title: '权限设置',
+      title: 'PermissionsSettings',
       icon: 'people'
     },
     children: [
-      { path: 'appRoles', component: () => import('@/views/roles/appRoles'), name: 'appRoles', meta: { title: 'App权限管理', noCache: true }},
-      { path: 'moduleRoles', component: () => import('@/views/roles/moduleRoles'), name: 'moduleRoles', meta: { title: '模块管理', noCache: true }},
-      { path: 'userRoles', component: () => import('@/views/roles/userRoles'), name: 'userRoles', meta: { title: '角色管理', noCache: true }},
-      { path: 'userManager', component: () => import('@/views/roles/userManager'), name: 'userManager', meta: { title: '用户管理', noCache: true }},
-      { path: 'sysOrg', component: () => import('@/views/roles/sysOrg'), name: 'sysOrg', meta: { title: '组织机构管理', noCache: true }},
-      { path: 'permission', component: () => import('@/views/roles/permission'), name: 'permission', meta: { title: '权限管理', noCache: true }},
-      { path: 'userRightsManagement', component: () => import('@/views/roles/userRightsManagement'), name: 'userRightsManagement', meta: { title: '用户权限管理', noCache: true }}
+      { path: 'appRoles', component: () => import('@/views/roles/appRoles'), name: 'appRoles', meta: { title: 'AppAuthorityManagement', noCache: true }},
+      { path: 'moduleRoles', component: () => import('@/views/roles/moduleRoles'), name: 'moduleRoles', meta: { title: 'ModuleManagement', noCache: true }},
+      { path: 'userRoles', component: () => import('@/views/roles/userRoles'), name: 'userRoles', meta: { title: 'RoleManagement', noCache: true }},
+      { path: 'userManager', component: () => import('@/views/roles/userManager'), name: 'userManager', meta: { title: 'userManagement', noCache: true }},
+      { path: 'sysOrg', component: () => import('@/views/roles/sysOrg'), name: 'sysOrg', meta: { title: 'OrganizationManagement', noCache: true }},
+      { path: 'permission', component: () => import('@/views/roles/permission'), name: 'permission', meta: { title: 'AuthorityManagement', noCache: true }}
+      // { path: 'userRightsManagement', component: () => import('@/views/roles/userRightsManagement'), name: 'userRightsManagement', meta: { title: '用户权限管理', noCache: true }}
     ]
   },
   {

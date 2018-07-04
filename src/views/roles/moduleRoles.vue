@@ -203,7 +203,7 @@
           this.updataLists()
           this.listLoading = false
         }).catch(() => {
-          alert("error")
+          this.listLoading = false
         })
       },
       // 刷新当前显示权限模块
@@ -225,7 +225,7 @@
           this.updataLists()
           this.listLoading = false
         }).catch(() => {
-          alert("error")
+          this.listLoading = false
         })
       },
       // 查询所有权限
@@ -239,7 +239,7 @@
           })
           this.listLoading = false
         }).catch(() => {
-          alert("error")
+          this.listLoading = false
         })
       },
       // 分页改动

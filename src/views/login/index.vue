@@ -61,8 +61,9 @@ export default {
   name: "login",
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!isvalidUsername(value)) {
-        callback(new Error("Please enter the correct user name"));
+      if (value.length > 3) {
+        // callback(new Error("Please enter the correct user name"));
+        callback();
       } else {
         callback();
       }
@@ -79,7 +80,7 @@ export default {
       captchaImg: "",
       loginForm: {
         username: "admin",
-        password: "admin1",
+        password: "admin",
         captcha: '',
         loginOrgin: "PC"
       },

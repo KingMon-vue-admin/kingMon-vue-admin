@@ -19,7 +19,7 @@
           </el-form-item>
           <el-form-item label="角色操作：">
             <el-transfer style="text-align: left; display:block;margin: auto; " v-model="value1" filterable :left-default-checked="[2, 3]"
-              :right-default-checked="[1]" :render-content="renderFunc" :titles="['未拥有角色', '已拥有角色']" :button-texts="['删除角色', '增加角色']"
+              :right-default-checked="[1]" :render-content="renderFunc" :titles="['未拥有的权限', '已拥有的权限']" :button-texts="['删除权限', '增加权限']"
               @change="handlePremsChange" :data="userPremsConfig.all">
               <!-- <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
             <el-button class="transfer-footer" slot="right-footer" size="small">操作</el-button> -->
@@ -237,7 +237,7 @@
       <el-table-column align="center" label="设置">
         <template slot-scope="scope">
           <el-button v-if="scope.row.edit" type="success" @click="ViewUpdateSysPosition(scope.row)" size="small" icon="el-icon-circle-check-outline">确认</el-button>
-          <el-button v-if="scope.row.edit" type="danger" @click="confirmDel(scope.row)" size="small" icon="el-icon-circle-check-outline">删除</el-button>
+          <!-- <el-button v-if="scope.row.edit" type="danger" @click="confirmDel(scope.row)" size="small" icon="el-icon-circle-check-outline">删除</el-button> -->
           <el-button v-if="scope.row.edit" size="small" icon="el-icon-refresh" type="warning" @click="cancelEdit(scope.row)">取消</el-button>
           <el-button v-else type="primary" @click='scope.row.edit=!scope.row.edit' size="small" icon="el-icon-edit">编辑</el-button>
         </template>
@@ -352,7 +352,7 @@
           handleChange(value, direction, movedKeys) {
             if (direction == 'left') {
               this.$store.dispatch('removeRoleFromUser', {
-               roleIds: movedKeys.toString(),
+                roleIds: movedKeys.toString(),
                 userId: this.form.id
               }).then(() => {
                 this.searchAppRoles()
@@ -426,8 +426,7 @@
 
               })
               // 查询角色列表
-            }).catch(err => {
-            })
+            }).catch(err => {})
           },
           // 分页改动
           handleCurrentChange(val) {
@@ -453,7 +452,7 @@
               this.form = s
               this.listLoading = false
             }).catch(() => {
-              alert("error")
+              this.listLoading = false
             })
           },
           // 查询
@@ -516,7 +515,7 @@
               this.permissionTab = s
               this.listLoading = false
             }).catch(() => {
-              alert("error")
+              this.listLoading = false
             })
           },
           // 删除
@@ -566,7 +565,7 @@
               })
               this.upApp()
             }).catch(() => {
-              alert("error")
+              this.listLoading = false
             })
 
           },
@@ -599,8 +598,7 @@
             })
           },
         },
-        watch: {
-        }
+        watch: {}
     };
 
 </script>

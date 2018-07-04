@@ -311,10 +311,12 @@
             })
             this.listLoading = false
           }).catch(() => {
-            alert("error")
+            this.listLoading = false
           })
           this.listLoading = false
-        }).catch(() => {})
+        }).catch(() => {
+          this.listLoading = false
+        })
       },
       // 分页改动
       handleCurrentChange(val) {

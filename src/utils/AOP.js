@@ -6,7 +6,7 @@ export function init(_, _FUN, _RUNS, _BEFORE, _AFTER) {
   }
   let _A = run(_BYCALL, _BEFORE, _AFTER)
   _[_FUN] = () => {
-    return _A ? _A.apply(_, arguments) : _BYCALL.apply(_, arguments);
+    return _A ? _A.apply(_, arguments) : _BYCALL.apply(_, arguments)
   }
 
   return {

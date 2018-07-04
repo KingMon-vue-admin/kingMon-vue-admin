@@ -291,7 +291,7 @@
           this.permissionTab = s
           this.listLoading = false
         }).catch(() => {
-          alert("error")
+          this.listLoading = false
         })
       },
       // 选择循环列表
@@ -304,7 +304,7 @@
           this.updataLists()
           this.listLoading = false
         }).catch(() => {
-          alert("error")
+          this.listLoading = false
         })
       },
 
@@ -328,10 +328,10 @@
             })
             this.listLoading = false
           }).catch(() => {
-            alert("error")
+            this.listLoading = false
           })
         }).catch(() => {
-          alert("errorX")
+          this.listLoading = false
         })
       },
       // 分页改动
@@ -413,7 +413,7 @@
           })
           this.upApp()
         }).catch(() => {
-          alert("error")
+          this.listLoading = false
         })
 
       },

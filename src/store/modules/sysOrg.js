@@ -30,7 +30,7 @@ const sysOrg = {
     async loadChildSysOrg({
       commit
     }, Parm) {
-      const response = loadChildSysOrgs(Parm)
+      const response = await loadChildSysOrgs(Parm)
       commit('UPDATA_APP_USER', response.data.data.sysOrg)
       return response
     },
