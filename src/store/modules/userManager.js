@@ -1,11 +1,9 @@
 import {
   loadAuthUserLists,
-  updateRoles,
   createAccounts,
   deletAuthRoles,
   loadOrgLists,
   loadAuthRoleLists,
-  updateSysPositions,
   setUserStatuss,
   loadRoleDataSetForUserAssigns,
   removeRoleFromUsers,
@@ -15,9 +13,6 @@ import {
   addPremsToUsers,
   removePremsFromUsers
 } from '@/api/userManager'
-import {
-  promises
-} from 'fs'
 const errorLog = {
   state: {
     userTable: '',
@@ -121,18 +116,6 @@ const errorLog = {
       commit
     }, Parm) {
       await addRolesToUsers(Parm)
-    },
-    // 更新某一个数据
-    updateRole({
-      commit
-    }, params) {
-      return new Promise((resolve, reject) => {
-        updateRoles(params).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
     },
     loadOrgListX({
       commit
