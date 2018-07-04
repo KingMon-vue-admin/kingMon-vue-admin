@@ -37,22 +37,12 @@
           </el-form-item>
         </el-form>
       </el-dialog>
-
       <!-- 顶部操作框 -->
       <el-select class="kingMon-right" v-model="searchs.appKey" clearable style="width: 160px;" placeholder="选择App类型">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
       <el-input size="small" class="kingMon-right" v-model="searchs.name" style="width: 200px;height: 35px;" placeholder="输入AppKey查询"></el-input>
-      <!-- <el-select class="kingMon-right" v-model="searchFrom.rules" clearable style="width: 90px" placeholder="选择顺序">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-        </el-option>
-      </el-select>
-      <el-select class="kingMon-right" v-model="searchFrom.rules" clearable style="width: 120px" placeholder="选择类型">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-        </el-option>
-      </el-select> -->
-
       <el-button class="kingMon-right" type="primary" icon="el-icon-search" @click="searchApp">搜索</el-button>
       <el-button class="kingMon-right" type="primary" icon="el-icon-edit" style="margin-left: 0px;" @click="dialogTableVisible = true">添加</el-button>
       <!-- 左侧选择最高权限 -->
@@ -60,12 +50,6 @@
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
-      <!-- 图表操作 -->
-      <el-checkbox-group v-model="checkboxVal">
-        <!-- <el-checkbox label="apple">apple</el-checkbox>
-        <el-checkbox label="banana">banana</el-checkbox>
-        <el-checkbox label="orange">orange</el-checkbox> -->
-      </el-checkbox-group>
     </div>
     <el-table :data="tableData" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
       <el-table-column class-name="status-col" label="模块ID" width="110">
@@ -89,7 +73,6 @@
           <span v-else>{{scope.row.code}}</span>
         </template>
       </el-table-column>
-
       <el-table-column class-name="status-col" label="模块父级" width="100">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
@@ -108,7 +91,6 @@
           <el-switch v-else v-model="scope.row.switch"></el-switch>
         </template>
       </el-table-column>
-
       <el-table-column min-width="100px" label="模块所属App">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
@@ -120,7 +102,6 @@
           <span v-else>{{ scope.row.appKey }}</span>
         </template>
       </el-table-column>
-
       <el-table-column min-width="100px" label="模块排列顺序">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
@@ -129,7 +110,6 @@
           <span v-else>{{ scope.row.disIndex }}</span>
         </template>
       </el-table-column>
-
       <el-table-column min-width="100px" label="模块备注">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
@@ -138,7 +118,6 @@
           <span v-else>{{ scope.row.remark }}</span>
         </template>
       </el-table-column>
-
       <el-table-column align="center" label="设置" width="300">
         <template slot-scope="scope">
           <el-button v-if="scope.row.edit" type="success" @click="confirmEdit(scope.row)" size="small" icon="el-icon-circle-check-outline">确认</el-button>
@@ -147,7 +126,6 @@
           <el-button v-else type="primary" @click='scope.row.edit=!scope.row.edit' size="small" icon="el-icon-edit">编辑</el-button>
         </template>
       </el-table-column>
-
     </el-table>
     <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage2"
       :page-sizes="[12, 15, 20, 25]" layout="sizes, prev, pager, next" :total="total" style="margin-top: 24px;">
@@ -198,7 +176,6 @@
         // 表格集合
         tableData: [],
         key: 1, // table key
-        checkboxVal: defaultFormThead, // checkboxVal
         formThead: defaultFormThead // 默认表头 Default header
       };
     },
@@ -343,19 +320,6 @@
       },
       // 修改
       confirmEdit(row) {
-        // 编辑App内容
-        //  {
-        //   id: row.id,
-        //   status: (row.switch ? 1 : 2),
-        //   icon: row.icon,
-        //   appKey: row.appKey,
-        //   name: row.name,
-        //   parentId: row.parentId,
-        //   disIndex: row.disIndex,
-        //   appDomain: row.appDomain,
-        //   remark: row.remark,
-        //   code: row.code,
-        // }
         this.$store.dispatch('updateAuthModuleChange', row).then(() => {
           // 编辑完成后关闭选项卡并提示
           row.edit = false
@@ -390,19 +354,7 @@
           }
         })
       },
-      // 查询
-      pullData() {
-
-      }
     },
-    watch: {
-      checkboxVal(valArr) {
-        this.formThead = this.formTheadOptions.filter(
-          i => valArr.indexOf(i) >= 0
-        );
-        this.key = this.key + 1;
-      }
-    }
   };
 
 </script>

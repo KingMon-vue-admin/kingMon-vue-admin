@@ -4,10 +4,7 @@ import {
   addRoles,
   deleteSysOrgs
 } from '@/api/sysOrg'
-import {
-  promises
-} from 'fs'
-const errorLog = {
+const sysOrg = {
   state: {
     Org: [],
     Nows: []
@@ -22,84 +19,40 @@ const errorLog = {
   },
   actions: {
     // 查询子集
-    loadMorex({
+    async loadMorex({
       commit
-    }, AppsList) {
-      return new Promise((resolve, reject) => {
-        loadChildSysOrgs(AppsList).then(req => {
-          console.log(req)
-          commit('UPDATA_APP_NOWS', req.data.data.sysOrg)
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
-      // commit('UPDATA_APP_LIST', Apps)
+    }, Parm) {
+      const response = await loadChildSysOrgs(Parm)
+      commit('UPDATA_APP_NOWS', response.data.data.sysOrg)
+      return response
     },
     // 加载权限表
-    loadChildSysOrg({
+    async loadChildSysOrg({
       commit
-    }, AppsList) {
-      return new Promise((resolve, reject) => {
-        loadChildSysOrgs(AppsList).then(req => {
-          commit('UPDATA_APP_USER', req.data.data.sysOrg)
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
-      // commit('UPDATA_APP_LIST', Apps)
+    }, Parm) {
+      const response = loadChildSysOrgs(Parm)
+      commit('UPDATA_APP_USER', response.data.data.sysOrg)
+      return response
     },
     // 更新某一个数据
-    createSysOrg({
+    async createSysOrg({
       commit
-    }, params) {
-      return new Promise((resolve, reject) => {
-        createSysOrgs(params).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      return await createSysOrgs(Parm)
     },
     // 删除该数据
-    deleteSysOrg({
+    async deleteSysOrg({
       commit
-    }, App) {
-      return new Promise((resolve, reject) => {
-        deleteSysOrgs(App).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      return await deleteSysOrgs(Parm)
     },
     // 添加权限
-    addRole({
+    async addRole({
       commit
-    }, App) {
-      return new Promise((resolve, reject) => {
-        addRoles(App).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
-    },
-    // 查询App
-    SearchAuthApp({
-      commit
-    }, App) {
-      return new Promise((resolve, reject) => {
-        SearchAuthApps(App).then(req => {
-          commit('UPDATA_APP_LIST', req.data.data.dataSet.rows)
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      return await addRoles(Parm)
     }
   }
 }
 
-export default errorLog
+export default sysOrg

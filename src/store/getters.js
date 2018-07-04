@@ -1,3 +1,4 @@
+
 const getters = {
   sidebar: state => state.app.sidebar,
   language: state => state.app.language,
@@ -14,5 +15,6 @@ const getters = {
   permission_routers: state => state.permission.routers,
   addRouters: state => state.permission.addRouters,
   errorLogs: state => state.errorLog.logs
+  // ...states
 }
 export default getters

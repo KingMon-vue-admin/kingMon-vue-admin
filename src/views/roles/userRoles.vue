@@ -19,7 +19,7 @@
           </el-form-item>
           <el-form-item label="角色操作：">
             <el-transfer style="text-align: left; display:block;margin: auto; " v-model="value1" filterable :left-default-checked="[2, 3]"
-              :right-default-checked="[1]" :render-content="renderFunc" :titles="['未拥有角色', '已拥有角色']" :button-texts="['删除角色', '增加角色']"
+              :right-default-checked="[1]" :titles="['未拥有角色', '已拥有角色']" :button-texts="['删除角色', '增加角色']"
               @change="handlePremsChange" :data="userPremsConfig.all">
               <!-- <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
             <el-button class="transfer-footer" slot="right-footer" size="small">操作</el-button> -->
@@ -92,13 +92,6 @@
       <!-- <el-button class="kingMon-right" type="primary" icon="el-icon-search" @click="searchApp">搜索</el-button> -->
       <el-button class="kingMon-right" type="primary" icon="el-icon-edit" style="margin-left: 0px;" @click="dialogTableVisible = true">添加</el-button>
       <!-- 左侧选择最高权限 -->
-
-      <!-- 图表操作 -->
-      <el-checkbox-group v-model="checkboxVal">
-        <!-- <el-checkbox label="apple">apple</el-checkbox>
-        <el-checkbox label="banana">banana</el-checkbox>
-        <el-checkbox label="orange">orange</el-checkbox> -->
-      </el-checkbox-group>
     </div>
     <el-table :data="tableData" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
       <el-table-column class-name="status-col" label="角色ID" width="110">
@@ -201,7 +194,7 @@
         // 权限修改
         preDialogTableVisible: false,
         // 分页总数
-        total: "",
+        total: 0,
         nowApps: "",
         // 默认页数
         currentPage2: 1,
@@ -221,8 +214,6 @@
         // 表格集合
         tableData: [],
         key: 1, // table key
-        checkboxVal: defaultFormThead, // checkboxVal
-        formThead: defaultFormThead // 默认表头 Default header
       };
     },
     created() {
@@ -353,21 +344,6 @@
         this.rows = val
         this.upApp(this.pages, this.rows)
       },
-      // 查询
-      searchApp() {
-        this.$store.dispatch('loadAuthRoleList', this.searchs).then(() => {
-          this.$message({
-            type: 'success',
-            message: '查询完成!'
-          });
-          this.updataLists()
-        }).catch(error => {
-          this.$message({
-            type: 'warning',
-            message: '查询失败!'
-          });
-        })
-      },
       // 添加
       addStatic() {
         this.$store.dispatch('addRole', {
@@ -458,18 +434,10 @@
           }
         })
       },
-      // 查询
-      pullData() {
-
-      }
+      
     },
     watch: {
-      checkboxVal(valArr) {
-        this.formThead = this.formTheadOptions.filter(
-          i => valArr.indexOf(i) >= 0
-        );
-        this.key = this.key + 1;
-      }
+     
     }
   };
 

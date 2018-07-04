@@ -112,7 +112,6 @@
         // 表格集合
         tableData: [],
         key: 1, // table key
-        checkboxVal: defaultFormThead, // checkboxVal
         formThead: defaultFormThead // 默认表头 Default header
       };
     },
@@ -121,9 +120,6 @@
     },
 
     methods: {
-      searchsDom (){
-
-      },
       // 节点内查找
       filterNode(value, data) {
         if (!value) return true;
@@ -131,7 +127,6 @@
       },
       // 删除节点
       deletDom(data) {
-
         this.$confirm('此操作将永久删除' + data.label + ', 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -152,8 +147,6 @@
             message: '已取消删除'
           });
         });
-
-
       },
       append(data) {
         this.dialogTableVisible = true;
@@ -216,40 +209,6 @@
           this.listLoading = false
         }).catch(() => {})
       },
-      // 点击增加
-      addDataLists(data) {
-        data.children = this.$store.state.sysOrg.Nows.map(row => {
-          return {
-            id: row.id,
-            label: row.name,
-            parentId: row.parentId
-          }
-        })
-        this.tableData = this.tableData.map(rows => {
-          if (rows.id == this.childrens[0].parentId) {
-            let btc = this.childrens
-            return {
-              id: rows.id,
-              label: rows.label,
-              children: [...btc]
-            }
-          }
-        })
-
-        let btc = this.childrens
-
-        // this.tableData = this.tableData.map(rows => {
-        //   console.log(rows.id)
-        //   if(rows.id == this.childrens[0].parentId){
-        //     return {
-        //       id: rows.id,
-        //       label :rows.label,
-        //       children: [...btc]
-        //     }
-        //   }
-        // })
-        console.log(this.tableData)
-      },
       // 查询所有权限
       upApp() {
         this.listLoading = true;
@@ -260,101 +219,6 @@
           this.listLoading = false
         }).catch(() => {})
       },
-      // 分页改动
-      handleCurrentChange() {
-
-      },
-      handleSizeChange() {
-
-      },
-      // 查询
-      searchApp() {
-        this.$store.dispatch('loadAuthRoleList', this.searchs).then(() => {
-          this.$message({
-            type: 'success',
-            message: '查询完成!'
-          });
-          this.updataLists()
-        }).catch(error => {
-          this.$message({
-            type: 'warning',
-            message: '查询失败!'
-          });
-        })
-      },
-      // 添加
-      addStatic() {
-        this.$store.dispatch('addRole', {
-          status: (this.form.status == true ? 1 : 2),
-          appKey: this.form.appKey,
-          name: this.form.name,
-          roleCode: this.form.roleCode,
-          description: this.form.description
-        }).then(() => {
-          this.$message({
-            message: this.form.name + ' - 添加成功',
-            type: 'success'
-          })
-          this.searchFrom.rules = this.form.appKey
-          this.upApp()
-          this.form = {
-            status: true
-          }
-          this.dialogTableVisible = false;
-          this.pullData()
-        })
-      },
-      // 删除
-      confirmDel(row) {
-        this.$confirm('此操作将永久删除用户：' + row.name + ' , 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$store.dispatch('deletAuthRole', {
-            id: row.id
-          })
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
-          this.upApp()
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
-      },
-      // 取消修改
-      cancelEdit(row) {
-        row.title = row.originalTitle
-        row.edit = false
-      },
-      // 修改
-      confirmEdit(row) {
-        // 编辑App内容
-        this.$store.dispatch('updateRole', {
-          id: row.id,
-          status: (row.switch ? 1 : 2),
-          appKey: row.appKey,
-          roleCode: row.roleCode,
-          name: row.name,
-          description: row.description
-        }).then(() => {
-          // 编辑完成后关闭选项卡并提示
-          row.edit = false
-          row.originalTitle = row.title
-          this.$message({
-            message: row.appKey + '修改成功',
-            type: 'success'
-          })
-          this.upApp()
-        }).catch(() => {
-          alert("error")
-        })
-
-      },
       // 循环更新列表
       updataLists() {
         this.tableData = this.$store.state.sysOrg.Org.map(row => {
@@ -363,23 +227,10 @@
             label: row.name
           }
         })
-        console.log(this.tableData, "当前Table-----------------------")
       },
-      // 查询
-      pullData() {
-
-      }
+      
     },
     watch: {
-      filterText(val) {
-        this.$refs.trees.filter(val);
-      },
-      checkboxVal(valArr) {
-        this.formThead = this.formTheadOptions.filter(
-          i => valArr.indexOf(i) >= 0
-        );
-        this.key = this.key + 1;
-      }
     }
   };
 

@@ -119,6 +119,9 @@
 </template>
 
 <script>
+  import {
+    mapGetters
+  } from 'vuex'
   const defaultFormThead = ["appKey", "status", "remark"];
   import elDragDialog from '@/directive/el-dragDialog' // base on element-ui
 
@@ -164,12 +167,13 @@
     },
     created() {
       this.pullData()
+      console.log(this.AppList,"xxxxxxxxx")
     },
     computed: {
-      //   tableData (){
-      //       return 
-      //   }  
-    },
+    ...mapGetters([
+      'AppList'
+    ])
+  },
     methods: {
       handleCurrentChange(val) {
         this.pages = val
@@ -270,6 +274,7 @@
       },
       // 循环更新列表
       updataLists() {
+
         this.tableData = this.$store.state.roles.AppList.map(row => {
           return {
             id: row.id,

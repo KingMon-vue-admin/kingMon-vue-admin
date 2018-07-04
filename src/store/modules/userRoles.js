@@ -10,10 +10,7 @@ import {
 import {
   loadAuthAppLists
 } from '@/api/roles'
-import {
-  promises
-} from 'fs'
-const errorLog = {
+const userRoles = {
   state: {
     UserList: []
   },
@@ -57,84 +54,40 @@ const errorLog = {
       }
     },
     // 加载应用表
-    loadAuthAppListApp({
+    async loadAuthAppListApp({
       commit
-    }, AppsList) {
-      return new Promise((resolve, reject) => {
-        loadAuthAppLists(AppsList).then(req => {
-          console.log(req)
-          commit('UPDATA_APP_LIST', req.data.data.dataSet.rows)
-          resolve(req)
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      const response = await loadAuthAppLists(Parm)
+      commit('UPDATA_APP_LIST', response.data.data.dataSet.rows)
+      return response
     },
     // 加载权限表
-    loadAuthRoleList({
+    async loadAuthRoleList({
       commit
-    }, AppsList) {
-      return new Promise((resolve, reject) => {
-        loadAuthRoleLists(AppsList).then(req => {
-          commit('UPDATA_APP_USER', req.data.rows)
-          resolve(req.data.rows)
-        }).catch(error => {
-          reject(error)
-        })
-      })
-      // commit('UPDATA_APP_LIST', Apps)
+    }, Parm) {
+      const response = await loadAuthRoleLists(Parm)
+      commit('UPDATA_APP_USER', response.data.rows)
+      return response
     },
     // 更新某一个数据
-    updateRole({
+    async updateRole({
       commit
-    }, params) {
-      return new Promise((resolve, reject) => {
-        updateRoles(params).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      return await updateRoles(Parm)
     },
     // 删除该数据
-    deletAuthRole({
+    async deletAuthRole({
       commit
-    }, App) {
-      return new Promise((resolve, reject) => {
-        console.log(App)
-        deletAuthRoles(App).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      return await deletAuthRoles(Parm)
     },
     // 添加权限
-    addRole({
+    async addRole({
       commit
-    }, App) {
-      return new Promise((resolve, reject) => {
-        addRoles(App).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
-    },
-    // 查询App
-    SearchAuthApp({
-      commit
-    }, App) {
-      return new Promise((resolve, reject) => {
-        SearchAuthApps(App).then(req => {
-          commit('UPDATA_APP_LIST', req.data.data.dataSet.rows)
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      return await addRoles(Parm)
     }
   }
 }
 
-export default errorLog
+export default userRoles

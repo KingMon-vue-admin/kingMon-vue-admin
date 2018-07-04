@@ -5,7 +5,7 @@ import {
   deletAuthPermissions
 } from '@/api/PermissionRoles'
 import {
-  loadAuthAppLists,
+  loadAuthAppLists
 } from '@/api/roles'
 const Permission = {
   state: {
@@ -20,8 +20,8 @@ const Permission = {
     // 查看
     async loadAuthAppListPermission({
       commit
-    }, AppsList) {
-      const response = await loadAuthAppLists(AppsList)
+    }, Parm) {
+      const response = await loadAuthAppLists(Parm)
       return response
     },
     // 查看权限

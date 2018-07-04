@@ -318,7 +318,6 @@
       },
       created() {
           this.upApp()
-          console.log(this.data, " search")
         },
         computed: {
 
@@ -427,12 +426,8 @@
 
               })
               // 查询角色列表
-
             }).catch(err => {
-              console.log(err)
             })
-
-
           },
           // 分页改动
           handleCurrentChange(val) {
@@ -443,54 +438,6 @@
           handleSizeChange(val) {
             this.rows = val
             this.upApp(this.pages, this.rows)
-          },
-          // 单个用户增加角色
-          addSelf(tag) {
-            this.$confirm('是否为用户：' + this.form.account + '增加角色' + tag.name + '?', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-            }).then(() => {
-              this.$store.dispatch('addRolesToUser', {
-                roleIds: tag.id,
-                userId: this.form.id
-              }).then(() => {
-                this.searchAppRoles()
-                this.$message({
-                  type: 'success',
-                  message: '增加角色成功!'
-                });
-              })
-            }).catch(() => {
-              this.$message({
-                type: 'info',
-                message: '已取消删除'
-              });
-            })
-          },
-          // 单个用户移除权限
-          handleClose(tag) {
-            this.$confirm('此操作将删除用户：' + this.form.account + '下的角色' + tag.name + ' , 是否继续?', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-            }).then(() => {
-              this.$store.dispatch('removeRoleFromUser', {
-                roleIds: tag.id,
-                userId: this.form.id
-              }).then(() => {
-                this.searchAppRoles()
-                this.$message({
-                  type: 'success',
-                  message: '删除成功!'
-                });
-              }).catch(err => {})
-            }).catch(() => {
-              this.$message({
-                type: 'info',
-                message: '已取消删除'
-              });
-            });
           },
           // 展开查看
           opens(s) {
@@ -533,21 +480,6 @@
             })
           },
           // 查询
-          searchApp() {
-            this.$store.dispatch('loadAuthRoleList', this.searchs).then(() => {
-              this.$message({
-                type: 'success',
-                message: '查询完成!'
-              });
-              this.updataLists()
-            }).catch(error => {
-              this.$message({
-                type: 'warning',
-                message: '查询失败!'
-              });
-            })
-          },
-          // 查询
           searchPrems() {
             this.$store.dispatch('loadPermDataSetForUserAssign', {
               userId: this.permissionTab.id,
@@ -585,28 +517,6 @@
               this.listLoading = false
             }).catch(() => {
               alert("error")
-            })
-          },
-          // 添加
-          addStatic() {
-            this.$store.dispatch('addRole', {
-              status: (this.form.status == true ? 1 : 2),
-              appKey: this.form.appKey,
-              name: this.form.name,
-              roleCode: this.form.roleCode,
-              description: this.form.description
-            }).then(() => {
-              this.$message({
-                message: this.form.name + ' - 添加成功',
-                type: 'success'
-              })
-              this.searchFrom.rules = this.form.appKey
-              this.upApp()
-              this.form = {
-                status: true
-              }
-              this.dialogTableVisible = false;
-              this.pullData()
             })
           },
           // 删除
@@ -688,23 +598,8 @@
               }
             })
           },
-          // 查询
-          pullData() {
-
-          }
         },
         watch: {
-          dialogTableVisible() {
-            this.value3 = []
-            this.userRolesConfig = {}
-            this.form.rules = ""
-          },
-          checkboxVal(valArr) {
-            this.formThead = this.formTheadOptions.filter(
-              i => valArr.indexOf(i) >= 0
-            );
-            this.key = this.key + 1;
-          }
         }
     };
 

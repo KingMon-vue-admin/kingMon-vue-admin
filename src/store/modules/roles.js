@@ -5,78 +5,51 @@ import {
   AddAuthApps,
   SearchAuthApps
 } from '@/api/roles'
-import {
-  promises
-} from 'fs';
-const errorLog = {
+const roles = {
   state: {
     AppList: []
   },
   mutations: {
     UPDATA_APP_LIST: (state, list) => {
       state.AppList = list
-    },
+    }
   },
   actions: {
     // 加载权限表
     async loadAuthAppListRoles({
       commit
-    }, AppsList) {
-      const response = await loadAuthAppLists(AppsList)
+    }, Parm) {
+      const response = await loadAuthAppLists(Parm)
       commit('UPDATA_APP_LIST', response.data.data.dataSet.rows)
       return response
     },
     // 更新某一个数据
-    updateAuthApp({
+    async updateAuthApp({
       commit
-    }, params) {
-      return new Promise((resolve, reject) => {
-        updateAuthApps(params).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      return await updateAuthApps(Parm)
     },
     // 删除该数据
-    DeletAuthApp({
+    async DeletAuthApp({
       commit
-    }, App) {
-      return new Promise((resolve, reject) => {
-        console.log(App)
-        DeletAuthApps(App).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      return await DeletAuthApps(Parm)
     },
     // 添加权限
-    AddAuthApp({
+    async AddAuthApp({
       commit
-    }, App) {
-      return new Promise((resolve, reject) => {
-        AddAuthApps(App).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      return await AddAuthApps(Parm)
     },
     // 查询App
-    SearchAuthApp({
+    async SearchAuthApp({
       commit
-    }, App) {
-      return new Promise((resolve, reject) => {
-        SearchAuthApps(App).then(req => {
-          commit('UPDATA_APP_LIST', req.data.data.dataSet.rows)
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      const response = await SearchAuthApps(Parm)
+      commit('UPDATA_APP_LIST', response.data.data.dataSet.rows)
+      return response
     }
   }
 }
 
-export default errorLog
+export default roles

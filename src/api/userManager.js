@@ -82,17 +82,6 @@ export function loadAuthRoleLists(params) {
   })
 }
 
-// 设置用户状态
-export function updateSysPositions(params) {
-  const data = requestMethod({
-    ...params
-  })
-  return request({
-    url: 'sys/sysPosition/updateSysPosition',
-    method: 'post',
-    data
-  })
-}
 
 // 修改用户权限
 export function setUserStatuss(params) {

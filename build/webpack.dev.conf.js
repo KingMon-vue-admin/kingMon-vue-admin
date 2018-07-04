@@ -9,7 +9,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
 const jquery = require('jquery')
-console.log(jquery)
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }

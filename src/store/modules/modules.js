@@ -5,79 +5,51 @@ import {
   addAuthModules
 } from '@/api/modules'
 import {
-  loadAuthAppLists,
+  loadAuthAppLists
 } from '@/api/roles'
-import {
-  promises
-} from 'fs';
-const errorLog = {
+const modules = {
   state: {
     ModulesList: []
   },
   mutations: {
     UPDATA_APP_LIST: (state, list) => {
       state.ModulesList = list
-    },
+    }
   },
   actions: {
     async loadAuthAppListModules({
       commit
-    }, AppsList) {
-      const response = await loadAuthAppLists(AppsList)
+    }, Parm) {
+      const response = await loadAuthAppLists(Parm)
       return response
     },
     // 加载权限表
-    loadAuthModuleList({
+    async loadAuthModuleList({
       commit
-    }, AppsList) {
-      return new Promise((resolve, reject) => {
-        loadAuthModuleLists(AppsList).then(req => {
-          commit('UPDATA_APP_LIST', req.data.rows)
-          resolve(req)
-        }).catch(error => {
-          reject(error)
-        })
-      })
-      // commit('UPDATA_APP_LIST', Apps)
+    }, Parm) {
+      const response = await loadAuthModuleLists(Parm)
+      commit('UPDATA_APP_LIST', response.data.rows)
+      return response
     },
     // 更新某一个数据
-    updateAuthModuleChange({
+    async updateAuthModuleChange({
       commit
-    }, params) {
-      return new Promise((resolve, reject) => {
-        UpdateAuthModules(params).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      return await UpdateAuthModules(Parm)
     },
     // 删除该数据
-    deletAuthModule({
+    async deletAuthModule({
       commit
-    }, App) {
-      return new Promise((resolve, reject) => {
-        console.log(App)
-        deletAuthModules(App).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      return await deletAuthModules(Parm)
     },
     // 添加权限
-    addAuthModule({
+    async addAuthModule({
       commit
-    }, App) {
-      return new Promise((resolve, reject) => {
-        addAuthModules(App).then(req => {
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    }, Parm) {
+      return await addAuthModules(Parm)
     }
   }
 }
 
-export default errorLog
+export default modules

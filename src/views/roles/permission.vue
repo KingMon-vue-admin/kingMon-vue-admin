@@ -176,7 +176,6 @@
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select> -->
-      <!-- <el-button class="kingMon-right" type="primary" icon="el-icon-search" @click="searchApp">搜索</el-button> -->
       <!-- 左侧选择最高权限 -->
 
 
@@ -236,7 +235,6 @@
         // 表格集合
         tableData: [],
         key: 1, // table key
-        checkboxVal: defaultFormThead, // checkboxVal
         formThead: defaultFormThead, // 默认表头 Default header
         pages: 1,
         rows: 12,
@@ -286,68 +284,6 @@
           console.log(req.data.rows, "jieguo")
         })
       },
-      append(data) {
-        this.dialogTableVisible = true;
-        this.testss = data
-      },
-      test() {
-        this.$store.dispatch('createSysOrg', {
-          status: (this.form.status ? 1 : 0),
-          name: this.form.name,
-          code: this.form.code,
-          parentId: this.testss.id
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '增加成功!'
-          });
-          this.dialogTableVisible = false;
-          this.upApp()
-        }).catch(() => {})
-      },
-
-      // 下级查询
-      moreTrees(val) {
-        return
-        console.log(val)
-        this.listLoading = true;
-        this.$store.dispatch('loadMore', {
-          id: val.id,
-        }).then(() => {
-          // this.addDataLists(val)
-          val.children = this.$store.state.sysOrg.Nows.map(row => {
-            return {
-              id: row.id,
-              label: row.name,
-              parentId: row.parentId
-            }
-          })
-          console.log(val, this.tableData)
-          this.listLoading = false
-        }).catch(() => {})
-      },
-      // 点击增加
-      addDataLists(data) {
-        data.children = this.$store.state.sysOrg.Nows.map(row => {
-          return {
-            id: row.id,
-            label: row.name,
-            parentId: row.parentId
-          }
-        })
-        this.tableData = this.tableData.map(rows => {
-          if (rows.id == this.childrens[0].parentId) {
-            let btc = this.childrens
-            return {
-              id: rows.id,
-              label: rows.label,
-              children: [...btc]
-            }
-          }
-        })
-
-        let btc = this.childrens
-      },
       // 查询所有权限
       upApp(page = 1, rows = 12) {
         this.listLoading = true;
@@ -389,21 +325,6 @@
       handleSizeChange(val) {
         this.rows = val
         this.upApp(this.pages, this.rows)
-      },
-      // 查询
-      searchApp() {
-        this.$store.dispatch('loadAuthRoleList', this.searchs).then(() => {
-          this.$message({
-            type: 'success',
-            message: '查询完成!'
-          });
-          this.updataLists()
-        }).catch(error => {
-          this.$message({
-            type: 'warning',
-            message: '查询失败!'
-          });
-        })
       },
       // 添加
       addStatic() {},
@@ -487,15 +408,7 @@
       }
     },
     watch: {
-      filterText(val) {
-        this.$refs.trees.filter(val);
-      },
-      checkboxVal(valArr) {
-        this.formThead = this.formTheadOptions.filter(
-          i => valArr.indexOf(i) >= 0
-        );
-        this.key = this.key + 1;
-      }
+      
     }
   };
 
