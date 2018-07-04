@@ -60,3 +60,38 @@ export function addRoles(params) {
   })
 }
 
+// 添加权限
+export function loadPermDataSetForRoleAssigns(params) {
+  const data = requestMethod({
+    ...params
+  })
+  return request({
+    url: 'auth/authRole/loadPermDataSetForRoleAssign',
+    method: 'POST',
+    data
+  })
+}
+
+// 单点增加权限
+export function addPermsToRoles(params) {
+  const data = requestMethod({
+    ...params
+  })
+  return request({
+    url: 'auth/authRole/addPermsToRole',
+    method: 'POST',
+    data
+  })
+}
+
+// 单点增加权限
+export function removePermsFromRoles(params) {
+  const data = requestMethod({
+    ...params
+  })
+  return request({
+    url: 'auth/authRole/removePermsFromRole',
+    method: 'POST',
+    data
+  })
+}

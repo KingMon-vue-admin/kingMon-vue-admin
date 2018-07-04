@@ -2,7 +2,10 @@ import {
   loadAuthRoleLists,
   updateRoles,
   addRoles,
-  deletAuthRoles
+  deletAuthRoles,
+  loadPermDataSetForRoleAssigns,
+  addPermsToRoles,
+  removePermsFromRoles
 } from '@/api/userRoles'
 import {
   loadAuthAppLists
@@ -20,6 +23,39 @@ const errorLog = {
     }
   },
   actions: {
+    // 单点删除权限
+    async removePermsFromRole({
+      commit
+    }, Parm) {
+      await removePermsFromRoles(Parm)
+    },
+    // 单点增加角色权限
+    async addPermsToRole({
+      commit
+    }, Parm) {
+      await addPermsToRoles(Parm)
+    },
+    // 加载权限
+    async loadPermDataSetForRoleAssign({
+      commit
+    }, Parm) {
+      const yes = await loadPermDataSetForRoleAssigns({
+        ...Parm,
+        isInRole: true,
+        page: 1,
+        rows: 10000
+      })
+      const no = await loadPermDataSetForRoleAssigns({
+        ...Parm,
+        isInRole: false,
+        page: 1,
+        rows: 10000
+      })
+      return {
+        yes: yes.data.rows,
+        no: no.data.rows
+      }
+    },
     // 加载应用表
     loadAuthAppListApp({
       commit

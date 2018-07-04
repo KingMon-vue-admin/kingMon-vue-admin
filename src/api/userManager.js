@@ -141,3 +141,39 @@ export function addRolesToUsers(params) {
     data
   })
 }
+
+// 查询用户权限
+export function loadPermDataSetForUserAssigns(params) {
+  const data = requestMethod({
+    ...params
+  })
+  return request({
+    url: 'auth/authUser/loadPermDataSetForUserAssign',
+    method: 'POST',
+    data
+  })
+}
+
+// 单个用户增加权限
+export function addPremsToUsers(params) {
+  const data = requestMethod({
+    ...params
+  })
+  return request({
+    url: 'auth/authUser/addPremsToUser',
+    method: 'POST',
+    data
+  })
+}
+
+// 单个用户增加权限
+export function removePremsFromUsers(params) {
+  const data = requestMethod({
+    ...params
+  })
+  return request({
+    url: 'auth/authUser/removePremsFromUser',
+    method: 'POST',
+    data
+  })
+}

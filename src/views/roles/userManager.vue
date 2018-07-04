@@ -1,14 +1,61 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <!--  -->
+      <!-- 修改权限 -->
+      <el-dialog v-el-drag-dialog title="用户权限设置" :visible.sync="preDialogTableVisible">
+        <el-form ref="form" :model="permissionTab" label-width="120px" style="width: 90%;margin: auto;">
+          <el-form-item label="当前用户名称：">
+            <b>{{permissionTab.account}}</b>
+          </el-form-item>
+          <el-form-item label="当前用户ID：">
+            <b>{{permissionTab.id}}</b>
+          </el-form-item>
+          <!-- {{form}} -->
+          <el-form-item label="选择App：">
+            <el-select class="kingMon-right" v-model="permissionTab.rules" @change="searchPrems" clearable style="width: 160px;" placeholder="选择App类型">
+              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="角色操作：">
+            <el-transfer style="text-align: left; display:block;margin: auto; " v-model="value1" filterable :left-default-checked="[2, 3]"
+              :right-default-checked="[1]" :render-content="renderFunc" :titles="['未拥有角色', '已拥有角色']" :button-texts="['删除角色', '增加角色']"
+              @change="handlePremsChange" :data="userPremsConfig.all">
+              <!-- <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
+            <el-button class="transfer-footer" slot="right-footer" size="small">操作</el-button> -->
+            </el-transfer>
+          </el-form-item>
+
+          <!-- 所有角色 -->
+          <!-- <el-form-item label="已拥有角色">
+            <el-tag v-if="userRolesConfig.yes != undefined" v-for="tag in userRolesConfig.yes" :key="tag.name" closable :type="tag.type"
+              @close="handleClose(tag)">
+              {{tag.name}}
+            </el-tag>
+            <span v-if="userRolesConfig.yes == undefined">请先选择App</span>
+            <span v-if="userRolesConfig.yes != undefined && userRolesConfig.yes.length == 0">该用户暂无角色</span>
+          </el-form-item>
+          <el-form-item label="未拥有角色">
+            <el-tag v-for="tag in userRolesConfig.no" :key="tag.name" :type="tag.type">
+              <span @click="addSelf(tag)">{{tag.name}}</span>
+            </el-tag>
+            <span v-if="userRolesConfig.yes == undefined">请先选择App</span>
+            <span v-if="userRolesConfig.no != undefined && userRolesConfig.no.length == 0">该App下暂无角色</span>
+          </el-form-item> -->
+          <el-form-item>
+            <el-button type="primary" style="margin-top: 24px;" @click="preDialogTableVisible = false">关闭</el-button>
+            <!-- <el-button @click="dialogTableVisible = false">关闭</el-button> -->
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+      <!-- 修改角色 -->
       <el-dialog v-el-drag-dialog title="用户角色设置" :visible.sync="dialogTableVisible">
         <el-form ref="form" :model="form" label-width="120px" style="width: 90%;margin: auto;">
           <el-form-item label="当前用户名称：">
-           <b>{{form.account}}</b>
+            <b>{{form.account}}</b>
           </el-form-item>
           <el-form-item label="当前用户ID：">
-           <b>{{form.id}}</b>
+            <b>{{form.id}}</b>
           </el-form-item>
           <!-- {{form}} -->
           <el-form-item label="选择App：">
@@ -18,14 +65,14 @@
             </el-select>
           </el-form-item>
           <el-form-item label="角色操作：">
-           <el-transfer style="text-align: left; display:block;margin: auto; " v-model="value3" filterable :left-default-checked="[2, 3]"
-            :right-default-checked="[1]" :render-content="renderFunc" :titles="['未拥有角色', '已拥有角色']" :button-texts="['删除角色', '增加角色']"
-            @change="handleChange" :data="userRolesConfig.all">
-            <!-- <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
+            <el-transfer style="text-align: left; display:block;margin: auto; " v-model="value3" filterable :left-default-checked="[2, 3]"
+              :right-default-checked="[1]" :render-content="renderFunc" :titles="['未拥有角色', '已拥有角色']" :button-texts="['删除角色', '增加角色']"
+              @change="handleChange" :data="userRolesConfig.all">
+              <!-- <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
             <el-button class="transfer-footer" slot="right-footer" size="small">操作</el-button> -->
-          </el-transfer>
+            </el-transfer>
           </el-form-item>
-          
+
           <!-- 所有角色 -->
           <!-- <el-form-item label="已拥有角色">
             <el-tag v-if="userRolesConfig.yes != undefined" v-for="tag in userRolesConfig.yes" :key="tag.name" closable :type="tag.type"
@@ -81,7 +128,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="用户账号" width="200">
+      <el-table-column class-name="status-col" label="用户账号" width="150">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
             <el-input size="small" v-model="scope.row.account"></el-input>
@@ -107,7 +154,7 @@
           <el-switch v-else v-model="scope.row.accountLocked"></el-switch>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="账户等级" width="200">
+      <el-table-column class-name="status-col" label="账户等级" width="170">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
             <el-input-number size="small" v-model="scope.row.authLevel"></el-input-number>
@@ -153,14 +200,15 @@
           <span v-else>{{userRoles[scope.row.defaultRole]}}</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column class-name="status-col" label="用户openId" width="200">
+      <el-table-column class-name="status-col" label="用户权限" width="150">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
-            <el-input size="small" v-model="scope.row.openId"></el-input>
+            <!-- loadPermDataSetForUserAssign -->
+            <el-button type="primary" @click="opensPrems(scope.row)">修改权限</el-button>
           </template>
-          <span v-else>{{scope.row.openId}}</span>
+          <span v-else>{{`可编辑权限`}}</span>
         </template>
-      </el-table-column> -->
+      </el-table-column>
       <!-- <el-table-column class-name="status-col" label="用户password" width="200">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
@@ -216,373 +264,449 @@
     },
     data() {
       return {
+        // 权限修改
+        value1: [],
+        userPremsConfig: {},
+        // 权限修改内容
+        permissionTab: {},
+        // 权限修改
+        preDialogTableVisible: false,
         value3: [],
-        renderFunc(h, option) { return <span> { option.label } </span>;},
-        // 分页总和
-        total: 0,
-        // 默认分页
-        currentPage2: 1,
-        // 用户角色管理
-        userRolesConfig: {},
-        // 角色表
-        userRoles: [],
-        userRolesSelect: [],
-        // 组织表
-        orgList: [],
-        orgListSelect: [],
-        nowApps: "",
-        // 分页改动
-        listQuery: {
-          page: 1,
-          limit: 10,
-          importance: undefined,
-          title: undefined,
-          type: undefined,
-          sort: '+id'
-        },
-        // 查询
-        searchs: {},
-        // 新增用戶
-        form: {},
-        dialogTableVisible: false,
-        // 顺序
-        options: [],
-        // 搜索内容集合
-        searchFrom: {},
-        // 是否loading
-        listLoading: false,
-        // 表格集合
-        tableData: [],
-        key: 1, // table key
-        checkboxVal: defaultFormThead, // checkboxVal
-        formThead: defaultFormThead // 默认表头 Default header
-      };
-    },
-    created() {
-      this.upApp()
-      console.log(this.data, " search")
-    },
-    computed: {
-
-    },
-    methods: {
-      handleChange(value, direction, movedKeys) {
-        if(direction == 'left'){
-          this.$store.dispatch('removeRoleFromUser', {
-            roleIds: movedKeys.toString(),
-            userId: this.form.id
-          }).then(() => {
-            this.searchAppRoles()
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            });
-          }).catch(err => {})
-        }else{
-          // 增加角色
-          this.$store.dispatch('addRolesToUser', {
-            roleIds: movedKeys.toString(),
-            userId: this.form.id
-          }).then(() => {
-            this.searchAppRoles()
-            this.$message({
-              type: 'success',
-              message: '增加角色成功!'
-            });
-        })
-        }
+        renderFunc(h, option) {
+          return <span> {
+            option.label
+          } </span>;},
+          // 分页总和
+          total: 0,
+            // 默认分页
+            currentPage2: 1,
+            // 用户角色管理
+            userRolesConfig: {},
+            // 角色表
+            userRoles: [],
+            userRolesSelect: [],
+            // 组织表
+            orgList: [],
+            orgListSelect: [],
+            nowApps: "",
+            // 分页改动
+            listQuery: {
+              page: 1,
+              limit: 10,
+              importance: undefined,
+              title: undefined,
+              type: undefined,
+              sort: '+id'
+            },
+            // 查询
+            searchs: {},
+            // 新增用戶
+            form: {},
+            dialogTableVisible: false,
+            // 顺序
+            options: [],
+            // 搜索内容集合
+            searchFrom: {},
+            // 是否loading
+            listLoading: false,
+            // 表格集合
+            tableData: [],
+            key: 1, // table key
+            checkboxVal: defaultFormThead, // checkboxVal
+            formThead: defaultFormThead // 默认表头 Default header
+        };
       },
-      // 设置用户权限极状态
-      ViewUpdateSysPosition(val) {
-        val.userIds = val.id
-        val.status = (val.status ? 0 : 1)
-        this.$store.dispatch('updateSysPosition', val).then(s => {
-          this.$message({
-            type: 'success',
-            message: '修改完成!'
-          });
+      created() {
           this.upApp()
-        }).catch(error => {
-          console.log(error, "查看返回的错误")
-        })
-      },
-      // 查询所有权限
-      upApp(page = 1, rows = 12) {
-        // 查询用户
-        this.$store.dispatch('loadOrgListX').then(() => {
-          this.orgListSelect = this.$store.state.userManager.sysOrgs.data.map(row => {
-            return {
-              id: row.orgTreeCode,
-              name: row.name
+          console.log(this.data, " search")
+        },
+        computed: {
+
+        },
+        methods: {
+          handlePremsChange(value, direction, movedKeys) {
+            if (direction == 'left') {
+              this.$store.dispatch('removePremsFromUser', {
+                permIds: movedKeys.toString(),
+                userId: this.permissionTab.id
+              }).then(() => {
+                this.searchPrems()
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!'
+                });
+              }).catch(err => {})
+            } else {
+              // 增加角色
+              this.$store.dispatch('addPremsToUser', {
+                permIds: movedKeys.toString(),
+                userId: this.permissionTab.id
+              }).then(() => {
+                this.searchPrems()
+                this.$message({
+                  type: 'success',
+                  message: '增加角色成功!'
+                });
+              })
             }
-          })
-          for (var value of this.$store.state.userManager.sysOrgs.data) {
-            this.orgList["'" + (value.orgTreeCode || 0) + "'"] = value.name
-          }
-          this.$store.dispatch('loadAuthUserList', {
-            page: page,
-            rows: rows
-          }).then(req => {
-            this.total = req.data.total
-            this.$store.dispatch('loadAuthRoleList', {
-              params: 1,
-            }).then(() => {
-              this.listLoading = false
-              this.updataLists()
-              this.userRolesSelect = this.$store.state.userManager.userX.map(row => {
+          },
+          handleChange(value, direction, movedKeys) {
+            if (direction == 'left') {
+              this.$store.dispatch('removeRoleFromUser', {
+               roleIds: movedKeys.toString(),
+                userId: this.form.id
+              }).then(() => {
+                this.searchAppRoles()
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!'
+                });
+              }).catch(err => {})
+            } else {
+              // 增加角色
+              this.$store.dispatch('addRolesToUser', {
+                roleIds: movedKeys.toString(),
+                userId: this.form.id
+              }).then(() => {
+                this.searchAppRoles()
+                this.$message({
+                  type: 'success',
+                  message: '增加角色成功!'
+                });
+              })
+            }
+          },
+          // 设置用户权限极状态
+          ViewUpdateSysPosition(val) {
+            val.userIds = val.id
+            val.status = (val.status ? 0 : 1)
+            this.$store.dispatch('updateSysPosition', val).then(s => {
+              this.$message({
+                type: 'success',
+                message: '修改完成!'
+              });
+              this.upApp()
+            }).catch(error => {
+              console.log(error, "查看返回的错误")
+            })
+          },
+          // 查询所有权限
+          upApp(page = 1, rows = 12) {
+            // 查询用户
+            this.$store.dispatch('loadOrgListX').then(() => {
+              this.orgListSelect = this.$store.state.userManager.sysOrgs.data.map(row => {
                 return {
-                  id: row.id,
+                  id: row.orgTreeCode,
                   name: row.name
                 }
               })
-              for (var value of this.$store.state.userManager.userX) {
-                this.userRoles[(value.id || 0)] = value.name
+              for (var value of this.$store.state.userManager.sysOrgs.data) {
+                this.orgList["'" + (value.orgTreeCode || 0) + "'"] = value.name
+              }
+              this.$store.dispatch('loadAuthUserList', {
+                page: page,
+                rows: rows
+              }).then(req => {
+                this.total = req.data.total
+                this.$store.dispatch('loadAuthRoleList', {
+                  params: 1,
+                }).then(() => {
+                  this.listLoading = false
+                  this.updataLists()
+                  this.userRolesSelect = this.$store.state.userManager.userX.map(row => {
+                    return {
+                      id: row.id,
+                      name: row.name
+                    }
+                  })
+                  for (var value of this.$store.state.userManager.userX) {
+                    this.userRoles[(value.id || 0)] = value.name
+                  }
+                })
+              }).catch(() => {
+
+              })
+              // 查询角色列表
+
+            }).catch(err => {
+              console.log(err)
+            })
+
+
+          },
+          // 分页改动
+          handleCurrentChange(val) {
+            this.pages = val
+            this.upApp(this.pages, this.rows)
+          },
+          // 改动总页数
+          handleSizeChange(val) {
+            this.rows = val
+            this.upApp(this.pages, this.rows)
+          },
+          // 单个用户增加角色
+          addSelf(tag) {
+            this.$confirm('是否为用户：' + this.form.account + '增加角色' + tag.name + '?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.$store.dispatch('addRolesToUser', {
+                roleIds: tag.id,
+                userId: this.form.id
+              }).then(() => {
+                this.searchAppRoles()
+                this.$message({
+                  type: 'success',
+                  message: '增加角色成功!'
+                });
+              })
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消删除'
+              });
+            })
+          },
+          // 单个用户移除权限
+          handleClose(tag) {
+            this.$confirm('此操作将删除用户：' + this.form.account + '下的角色' + tag.name + ' , 是否继续?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.$store.dispatch('removeRoleFromUser', {
+                roleIds: tag.id,
+                userId: this.form.id
+              }).then(() => {
+                this.searchAppRoles()
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!'
+                });
+              }).catch(err => {})
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消删除'
+              });
+            });
+          },
+          // 展开查看
+          opens(s) {
+            this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
+              console.log(req.data.data.dataSet.rows)
+              this.options = req.data.data.dataSet.rows.map(view => {
+                return {
+                  value: view.appKey,
+                  label: view.name
+                }
+              })
+              this.dialogTableVisible = true
+              this.form = s
+              this.listLoading = false
+            }).catch(() => {
+              alert("error")
+            })
+          },
+          // 查询
+          searchAppRoles() {
+            this.$store.dispatch('loadRoleDataSetForUserAssign', {
+              userId: this.form.id,
+              appKey: this.form.rules,
+            }).then(req => {
+              this.userRolesConfig = req
+              let alls = [...req.yes, ...req.no]
+              this.userRolesConfig.all = alls.map(row => {
+                return {
+                  id: row.id,
+                  key: row.id,
+                  label: row.name,
+                  roleCode: row.roleCode
+                }
+              })
+              this.value3 = req.yes.map(row => {
+                return row.id
+              })
+            }).catch(err => {
+              console.log(err)
+            })
+          },
+          // 查询
+          searchApp() {
+            this.$store.dispatch('loadAuthRoleList', this.searchs).then(() => {
+              this.$message({
+                type: 'success',
+                message: '查询完成!'
+              });
+              this.updataLists()
+            }).catch(error => {
+              this.$message({
+                type: 'warning',
+                message: '查询失败!'
+              });
+            })
+          },
+          // 查询
+          searchPrems() {
+            this.$store.dispatch('loadPermDataSetForUserAssign', {
+              userId: this.permissionTab.id,
+              appKey: this.permissionTab.rules,
+            }).then(req => {
+              console.log(req, "thisCallback")
+              this.userRolesConfig = req
+              let alls = [...req.yes, ...req.no]
+              this.userPremsConfig.all = alls.map(row => {
+                return {
+                  id: row.id,
+                  key: row.id,
+                  label: row.name,
+                  roleCode: row.roleCode
+                }
+              })
+              this.value1 = req.yes.map(row => {
+                return row.id
+              })
+            }).catch(err => {
+              console.log(err)
+            })
+          },
+          opensPrems(s) {
+            this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
+              console.log(req.data.data.dataSet.rows)
+              this.options = req.data.data.dataSet.rows.map(view => {
+                return {
+                  value: view.appKey,
+                  label: view.name
+                }
+              })
+              this.preDialogTableVisible = true
+              this.permissionTab = s
+              this.listLoading = false
+            }).catch(() => {
+              alert("error")
+            })
+          },
+          // 添加
+          addStatic() {
+            this.$store.dispatch('addRole', {
+              status: (this.form.status == true ? 1 : 2),
+              appKey: this.form.appKey,
+              name: this.form.name,
+              roleCode: this.form.roleCode,
+              description: this.form.description
+            }).then(() => {
+              this.$message({
+                message: this.form.name + ' - 添加成功',
+                type: 'success'
+              })
+              this.searchFrom.rules = this.form.appKey
+              this.upApp()
+              this.form = {
+                status: true
+              }
+              this.dialogTableVisible = false;
+              this.pullData()
+            })
+          },
+          // 删除
+          confirmDel(row) {
+            this.$confirm('此操作将永久删除用户：' + row.name + ' , 是否继续?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.$store.dispatch('deletAuthRole', {
+                id: row.id
+              })
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+              this.upApp()
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消删除'
+              });
+            });
+          },
+          // 取消修改
+          cancelEdit(row) {
+            row.title = row.originalTitle
+            row.edit = false
+          },
+          // 修改
+          confirmEdit(row) {
+            // 编辑App内容
+            this.$store.dispatch('updateRole', {
+              id: row.id,
+              status: (row.switch ? 1 : 2),
+              appKey: row.appKey,
+              roleCode: row.roleCode,
+              name: row.name,
+              description: row.description
+            }).then(() => {
+              // 编辑完成后关闭选项卡并提示
+              row.edit = false
+              row.originalTitle = row.title
+              this.$message({
+                message: row.appKey + '修改成功',
+                type: 'success'
+              })
+              this.upApp()
+            }).catch(() => {
+              alert("error")
+            })
+
+          },
+          // 循环更新列表
+          updataLists() {
+            console.log(this.$store.state.userManager, "查看变化")
+            this.tableData = this.$store.state.userManager.userTable.map(row => {
+              return {
+                originalTitle: row.account,
+                account: row.account,
+                // accountExpired 该账号是否过期 0 不过 1 过
+                accountExpired: row.accountExpired,
+                // accountLocked 该账号是上锁 0 不锁 1 锁
+                accountLocked: row.accountLocked,
+                authLevel: row.authLevel,
+                // credentialsExpired凭证是否过期 0 不过 1过
+                credentialsExpired: row.credentialsExpired,
+                defaultOrg: row.defaultOrg,
+                switch: (row.status == 1 ? true : false),
+                status: row.status,
+                edit: false,
+                defaultPosition: row.defaultPosition,
+                defaultRole: row.defaultRole,
+                id: row.id,
+                openId: row.openId,
+                password: "请输入要修改的密码",
+                salt: row.salt,
+
               }
             })
-          }).catch(() => {
-
-          })
-          // 查询角色列表
-
-        }).catch(err => {
-          console.log(err)
-        })
-
-
-      },
-      // 分页改动
-      handleCurrentChange(val) {
-        this.pages = val
-        this.upApp(this.pages, this.rows)
-      },
-      // 改动总页数
-      handleSizeChange(val) {
-        this.rows = val
-        this.upApp(this.pages, this.rows)
-      },
-      // 单个用户增加角色
-      addSelf(tag) {
-        this.$confirm('是否为用户：' + this.form.account + '增加角色' + tag.name + '?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$store.dispatch('addRolesToUser', {
-            roleIds: tag.id,
-            userId: this.form.id
-          }).then(() => {
-            this.searchAppRoles()
-            this.$message({
-              type: 'success',
-              message: '增加角色成功!'
-            });
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        })
-      },
-      // 单个用户移除权限
-      handleClose(tag) {
-        this.$confirm('此操作将删除用户：' + this.form.account + '下的角色' + tag.name + ' , 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$store.dispatch('removeRoleFromUser', {
-            roleIds: tag.id,
-            userId: this.form.id
-          }).then(() => {
-            this.searchAppRoles()
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            });
-          }).catch(err => {})
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
-      },
-      // 展开查看
-      opens(s) {
-        this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
-          console.log(req.data.data.dataSet.rows)
-          this.options = req.data.data.dataSet.rows.map(view => {
-            return {
-              value: view.appKey,
-              label: view.name
-            }
-          })
-          this.dialogTableVisible = true
-          this.form = s
-          this.listLoading = false
-        }).catch(() => {
-          alert("error")
-        })
-      },
-      // 查询
-      searchAppRoles() {
-        this.$store.dispatch('loadRoleDataSetForUserAssign', {
-          userId: this.form.id,
-          appKey: this.form.rules,
-        }).then(req => {
-          this.userRolesConfig = req
-          let alls = [...req.yes, ...req.no]
-          this.userRolesConfig.all = alls.map(row => {
-            return {
-              id: row.id,
-              key: row.id,
-              label: row.name,
-              roleCode: row.roleCode
-            }
-          })
-          this.value3 = req.yes.map(row => {
-            return row.id
-          })
-        }).catch(err => {
-          console.log(err)
-        })
-      },
-      // 查询
-      searchApp() {
-        this.$store.dispatch('loadAuthRoleList', this.searchs).then(() => {
-          this.$message({
-            type: 'success',
-            message: '查询完成!'
-          });
-          this.updataLists()
-        }).catch(error => {
-          this.$message({
-            type: 'warning',
-            message: '查询失败!'
-          });
-        })
-      },
-      // 添加
-      addStatic() {
-        this.$store.dispatch('addRole', {
-          status: (this.form.status == true ? 1 : 2),
-          appKey: this.form.appKey,
-          name: this.form.name,
-          roleCode: this.form.roleCode,
-          description: this.form.description
-        }).then(() => {
-          this.$message({
-            message: this.form.name + ' - 添加成功',
-            type: 'success'
-          })
-          this.searchFrom.rules = this.form.appKey
-          this.upApp()
-          this.form = {
-            status: true
-          }
-          this.dialogTableVisible = false;
-          this.pullData()
-        })
-      },
-      // 删除
-      confirmDel(row) {
-        this.$confirm('此操作将永久删除用户：' + row.name + ' , 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$store.dispatch('deletAuthRole', {
-            id: row.id
-          })
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
-          this.upApp()
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
-      },
-      // 取消修改
-      cancelEdit(row) {
-        row.title = row.originalTitle
-        row.edit = false
-      },
-      // 修改
-      confirmEdit(row) {
-        // 编辑App内容
-        this.$store.dispatch('updateRole', {
-          id: row.id,
-          status: (row.switch ? 1 : 2),
-          appKey: row.appKey,
-          roleCode: row.roleCode,
-          name: row.name,
-          description: row.description
-        }).then(() => {
-          // 编辑完成后关闭选项卡并提示
-          row.edit = false
-          row.originalTitle = row.title
-          this.$message({
-            message: row.appKey + '修改成功',
-            type: 'success'
-          })
-          this.upApp()
-        }).catch(() => {
-          alert("error")
-        })
-
-      },
-      // 循环更新列表
-      updataLists() {
-        console.log(this.$store.state.userManager, "查看变化")
-        this.tableData = this.$store.state.userManager.userTable.map(row => {
-          return {
-            originalTitle: row.account,
-            account: row.account,
-            // accountExpired 该账号是否过期 0 不过 1 过
-            accountExpired: row.accountExpired,
-            // accountLocked 该账号是上锁 0 不锁 1 锁
-            accountLocked: row.accountLocked,
-            authLevel: row.authLevel,
-            // credentialsExpired凭证是否过期 0 不过 1过
-            credentialsExpired: row.credentialsExpired,
-            defaultOrg: row.defaultOrg,
-            switch: (row.status == 1 ? true : false),
-            status: row.status,
-            edit: false,
-            defaultPosition: row.defaultPosition,
-            defaultRole: row.defaultRole,
-            id: row.id,
-            openId: row.openId,
-            password: "请输入要修改的密码",
-            salt: row.salt,
+          },
+          // 查询
+          pullData() {
 
           }
-        })
-      },
-      // 查询
-      pullData() {
-
-      }
-    },
-    watch: {
-      dialogTableVisible(){
-        this.value3 = []
-        this.userRolesConfig = {}
-        this.form.rules = ""
-      },
-      checkboxVal(valArr) {
-        this.formThead = this.formTheadOptions.filter(
-          i => valArr.indexOf(i) >= 0
-        );
-        this.key = this.key + 1;
-      }
-    }
-  };
+        },
+        watch: {
+          dialogTableVisible() {
+            this.value3 = []
+            this.userRolesConfig = {}
+            this.form.rules = ""
+          },
+          checkboxVal(valArr) {
+            this.formThead = this.formTheadOptions.filter(
+              i => valArr.indexOf(i) >= 0
+            );
+            this.key = this.key + 1;
+          }
+        }
+    };
 
 </script>
 <style scoped lang="scss">

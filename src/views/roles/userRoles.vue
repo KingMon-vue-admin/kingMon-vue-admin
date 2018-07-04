@@ -1,8 +1,55 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <!-- 修改权限 -->
+      <el-dialog v-el-drag-dialog title="用户权限设置" :visible.sync="preDialogTableVisible">
+        <el-form ref="form" :model="permissionTab" label-width="120px" style="width: 90%;margin: auto;">
+          <el-form-item label="当前用户名称：">
+            <b>{{permissionTab.account}}</b>
+          </el-form-item>
+          <el-form-item label="当前用户ID：">
+            <b>{{permissionTab.id}}</b>
+          </el-form-item>
+          <!-- {{form}} -->
+          <el-form-item label="选择App：">
+            <el-select class="kingMon-right" v-model="permissionTab.rules" @change="searchPrems" clearable style="width: 160px;" placeholder="选择App类型">
+              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="角色操作：">
+            <el-transfer style="text-align: left; display:block;margin: auto; " v-model="value1" filterable :left-default-checked="[2, 3]"
+              :right-default-checked="[1]" :render-content="renderFunc" :titles="['未拥有角色', '已拥有角色']" :button-texts="['删除角色', '增加角色']"
+              @change="handlePremsChange" :data="userPremsConfig.all">
+              <!-- <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
+            <el-button class="transfer-footer" slot="right-footer" size="small">操作</el-button> -->
+            </el-transfer>
+          </el-form-item>
 
-      <el-dialog v-el-drag-dialog title="新增模块" :visible.sync="dialogTableVisible">
+          <!-- 所有角色 -->
+          <!-- <el-form-item label="已拥有角色">
+            <el-tag v-if="userRolesConfig.yes != undefined" v-for="tag in userRolesConfig.yes" :key="tag.name" closable :type="tag.type"
+              @close="handleClose(tag)">
+              {{tag.name}}
+            </el-tag>
+            <span v-if="userRolesConfig.yes == undefined">请先选择App</span>
+            <span v-if="userRolesConfig.yes != undefined && userRolesConfig.yes.length == 0">该用户暂无角色</span>
+          </el-form-item>
+          <el-form-item label="未拥有角色">
+            <el-tag v-for="tag in userRolesConfig.no" :key="tag.name" :type="tag.type">
+              <span @click="addSelf(tag)">{{tag.name}}</span>
+            </el-tag>
+            <span v-if="userRolesConfig.yes == undefined">请先选择App</span>
+            <span v-if="userRolesConfig.no != undefined && userRolesConfig.no.length == 0">该App下暂无角色</span>
+          </el-form-item> -->
+          <el-form-item>
+            <el-button type="primary" style="margin-top: 24px;" @click="preDialogTableVisible = false">关闭</el-button>
+            <!-- <el-button @click="dialogTableVisible = false">关闭</el-button> -->
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+      <!-- 新增角色 -->
+      <el-dialog v-el-drag-dialog title="新增角色" :visible.sync="dialogTableVisible">
         <el-form ref="form" :model="form" label-width="100px" style="width: 90%;margin: auto;">
           <el-form-item label="所属appKey">
             <el-select v-model="form.appKey" clearable style="width:200px;" placeholder="选择App类型">
@@ -10,16 +57,16 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="用户code">
+          <el-form-item label="角色code">
             <el-input v-model="form.roleCode"></el-input>
           </el-form-item>
-          <el-form-item label="用户名称">
+          <el-form-item label="角色名称">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
-          <el-form-item label="用户开启状态">
+          <el-form-item label="角色开启状态">
             <el-switch v-model="form.status"></el-switch>
           </el-form-item>
-          <el-form-item label="用户描述">
+          <el-form-item label="角色描述">
             <el-input type="textarea" v-model="form.description"></el-input>
           </el-form-item>
           <el-form-item>
@@ -54,12 +101,12 @@
       </el-checkbox-group>
     </div>
     <el-table :data="tableData" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
-      <el-table-column class-name="status-col" label="用户ID" width="110">
+      <el-table-column class-name="status-col" label="角色ID" width="110">
         <template slot-scope="scope">
           <span>{{scope.row.id}}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="用户名称" width="200">
+      <el-table-column class-name="status-col" label="角色名称" width="200">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
             <el-input size="small" v-model="scope.row.appName"></el-input>
@@ -67,7 +114,7 @@
           <span v-else>{{scope.row.appName}}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="所属用户名称" width="200">
+      <el-table-column class-name="status-col" label="所属角色名称" width="200">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
             <el-input size="small" v-model="scope.row.name"></el-input>
@@ -75,7 +122,7 @@
           <span v-else>{{scope.row.name}}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="用户代号" width="200">
+      <el-table-column class-name="status-col" label="角色代号" width="200">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
             <el-input size="small" v-model="scope.row.roleCode"></el-input>
@@ -83,7 +130,7 @@
           <span v-else>{{scope.row.roleCode}}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="用户状态" width="100">
+      <el-table-column class-name="status-col" label="角色状态" width="100">
         <template slot-scope="scope">
           <div v-if="!scope.row.edit">
             <el-tag v-if="scope.row.status == 1">开启</el-tag>
@@ -92,7 +139,7 @@
           <el-switch v-else v-model="scope.row.switch"></el-switch>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="用户权限描述" width="200">
+      <el-table-column class-name="status-col" label="角色权限描述" width="200">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
             <el-input size="small" v-model="scope.row.description"></el-input>
@@ -100,7 +147,7 @@
           <span v-else>{{scope.row.description}}</span>
         </template>
       </el-table-column>
-      <el-table-column min-width="100px" label="用户所属App">
+      <el-table-column min-width="100px" label="角色所属App">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
             <el-select v-model="scope.row.appKey" clearable style="width: 100%;" placeholder="选择App类型">
@@ -111,7 +158,14 @@
           <span v-else>{{ scope.row.appKey }}</span>
         </template>
       </el-table-column>
-
+      <el-table-column min-width="50px" label="角色权限">
+        <template slot-scope="scope">
+          <template v-if="scope.row.edit">
+            <el-button type="primary" @click="opensPrems(scope.row)">修改权限</el-button>
+          </template>
+          <span v-else>{{ `角色可编辑` }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="设置" width="300">
         <template slot-scope="scope">
           <el-button v-if="scope.row.edit" type="success" @click="confirmEdit(scope.row)" size="small" icon="el-icon-circle-check-outline">确认</el-button>
@@ -122,8 +176,8 @@
       </el-table-column>
 
     </el-table>
-    <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage2" :page-sizes="[12, 15, 20, 25]"
-      layout="sizes, prev, pager, next" :total="total" style="margin-top: 24px;">
+    <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage2"
+      :page-sizes="[12, 15, 20, 25]" layout="sizes, prev, pager, next" :total="total" style="margin-top: 24px;">
     </el-pagination>
   </div>
 </template>
@@ -139,6 +193,13 @@
     },
     data() {
       return {
+        // 权限修改
+        value1: [],
+        userPremsConfig: {},
+        // 权限修改内容
+        permissionTab: {},
+        // 权限修改
+        preDialogTableVisible: false,
         // 分页总数
         total: "",
         nowApps: "",
@@ -171,6 +232,77 @@
 
     },
     methods: {
+      // 查询
+      searchPrems() {
+        console.log(this.permissionTab)
+        this.$store.dispatch('loadPermDataSetForRoleAssign', {
+          roleId: this.permissionTab.id,
+          appKey: this.permissionTab.rules,
+        }).then(req => {
+          console.log(req, "thisCallback")
+          this.userRolesConfig = req
+          let alls = [...req.yes, ...req.no]
+          this.userPremsConfig.all = alls.map(row => {
+            return {
+              id: row.id,
+              key: row.id,
+              label: row.name,
+              roleCode: row.roleCode
+            }
+          })
+          this.value1 = req.yes.map(row => {
+            return row.id
+          })
+        }).catch(err => {
+          console.log(err)
+        })
+      },
+      // 权限编辑
+      handlePremsChange(value, direction, movedKeys) {
+        if (direction == 'left') {
+          this.$store.dispatch('removePermsFromRole', {
+            permIds: movedKeys.toString(),
+            roleId: this.permissionTab.id
+          }).then(() => {
+            this.searchPrems()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+          }).catch(err => {})
+        } else {
+          // 增加角色
+          this.$store.dispatch('addPermsToRole', {
+            permIds: movedKeys.toString(),
+            roleId: this.permissionTab.id
+          }).then(() => {
+            this.searchPrems()
+            this.$message({
+              type: 'success',
+              message: '增加角色成功!'
+            });
+          })
+        }
+      },
+      // 角色权限编辑
+      opensPrems(s) {
+        this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
+          console.log(req.data.data.dataSet.rows)
+          this.options = req.data.data.dataSet.rows.map(view => {
+            return {
+              value: view.appKey,
+              label: view.name
+            }
+          })
+          this.permissionTab.rules = ""
+          this.userPremsConfig = {}
+          this.preDialogTableVisible = true
+          this.permissionTab = s
+          this.listLoading = false
+        }).catch(() => {
+          alert("error")
+        })
+      },
       // 选择循环列表
       test(val) {
         this.listLoading = true;
@@ -260,7 +392,7 @@
       },
       // 删除
       confirmDel(row) {
-        this.$confirm('此操作将永久删除用户：' + row.name + ' , 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除角色：' + row.name + ' , 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
