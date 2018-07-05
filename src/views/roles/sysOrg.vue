@@ -62,7 +62,6 @@
 <script>
   const defaultFormThead = ['appKey', 'status', 'remark']
   import elDragDialog from '@/directive/el-dragDialog' // base on element-ui
-
   export default {
     name: 'sysOrg',
     directives: {
@@ -71,7 +70,7 @@
     data() {
       return {
         // 节点查询
-        filterText: 0,
+        filterText: '',
         // 代理节点
         testss: {},
         defaultProps: {

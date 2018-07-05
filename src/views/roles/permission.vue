@@ -3,12 +3,6 @@
     <div class="filter-container">
       <el-dialog v-el-drag-dialog title="新增权限" :visible.sync="dialogTableVisible">
         <el-form ref="form" :model="form" label-width="100px" style="width: 90%;margin: auto;">
-          <!-- <el-form-item label="所属appKey">
-            <el-select v-model="form.appKey" clearable style="width:200px;" placeholder="选择App类型">
-              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item> -->
           <el-form-item label="权限名称">
             <el-input type="input" v-model="form.name"></el-input>
           </el-form-item>
@@ -19,10 +13,11 @@
             <el-input v-model="form.permCode"></el-input>
           </el-form-item>
           <el-form-item label="所属应用">
-            <el-select clearable v-model="form.appKey" style="margin-bottom: 12px; width: 150px;" placeholder="所属应用">
+            <el-select v-if="!Apps" clearable v-model="form.appKey" style="margin-bottom: 12px; width: 150px;" placeholder="所属应用">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
+            <el-tag>{{form.appKey = Apps.appKey}}</el-tag>
           </el-form-item>
           <el-form-item label="所属模块">
             <el-cascader v-model="form.moduleId" :props="props" filterable :options="propsModule" @active-item-change="handleItemChange"
@@ -59,12 +54,11 @@
         <el-option v-for="item in [{value: 1, label: '开启'},{value: 2, label: '关闭'}]" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
-      <el-select class="kingMon-right" v-model="searchs.appKey" clearable style="margin-bottom: 12px; width: 150px;" placeholder="所属App">
+      <el-select v-if="!Apps" class="kingMon-right" v-model="searchs.appKey" clearable style="margin-bottom: 12px; width: 150px;"
+        placeholder="所属App">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
-
-
       <el-button type="primary" icon="el-icon-search" @click="searchsDom">点击搜索</el-button>
       <el-button type="primary" icon="el-icon-plus" @click="dialogTableVisible = true">添加权限</el-button>
       <!-- 权限显示 -->
@@ -74,7 +68,6 @@
             <span>{{scope.row.id}}</span>
           </template>
         </el-table-column>
-
         <el-table-column class-name="status-col" label="权限名称" width="210">
           <template slot-scope="scope">
             <template v-if="scope.row.edit">
@@ -86,7 +79,7 @@
         <el-table-column min-width="50px" label="模块ID">
           <template slot-scope="scope">
             <template v-if="scope.row.edit">
-              <el-cascader v-model="scope.row.where" :props="props" filterable :options="propsModule" @change="handleItemChange"></el-cascader>
+              <el-cascader v-model="scope.row.where" :props="props" filterable :options="propsModule" @active-item-change="handleItemChange"></el-cascader>
             </template>
             <span v-else>{{ scope.row.moduleId }}</span>
           </template>
@@ -118,10 +111,11 @@
         <el-table-column class-name="status-col" label="权限所属" width="110">
           <template slot-scope="scope">
             <template v-if="scope.row.edit">
-              <el-select class="kingMon-right" v-model="scope.row.appKey" clearable style="width: 100%;" placeholder="选择App类型">
+              <el-select v-if="!Apps" class="kingMon-right" v-model="scope.row.appKey" clearable style="width: 100%;" placeholder="选择App类型">
                 <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
+              <el-tag v-else>{{Apps.appKey}}</el-tag>
             </template>
             <span v-else>{{scope.row.appName}}</span>
           </template>
@@ -135,7 +129,6 @@
             <el-switch v-else v-model="scope.row.switch"></el-switch>
           </template>
         </el-table-column>
-
         <el-table-column min-width="50px" label="权限描述">
           <template slot-scope="scope">
             <template v-if="scope.row.edit">
@@ -144,7 +137,6 @@
             <span v-else>{{ scope.row.description }}</span>
           </template>
         </el-table-column>
-
         <el-table-column min-width="50px" label="是否通用">
           <template slot-scope="scope">
             <div v-if="!scope.row.edit">
@@ -184,6 +176,9 @@
 </template>
 
 <script>
+  import {
+    mapGetters
+  } from 'vuex'
   const defaultFormThead = ["appKey", "status", "remark"];
   import elDragDialog from '@/directive/el-dragDialog' // base on element-ui
 
@@ -254,7 +249,12 @@
     created() {
       this.upApp()
     },
-
+    computed: {
+      // 查看用户是否admin
+      ...mapGetters([
+        'Apps'
+      ])
+    },
     methods: {
       searchsDom(e, page = 1, rows = 12) {
         this.$store.dispatch('loadAuthPermissionList', {
@@ -294,16 +294,16 @@
         }).then(req => {
           this.total = req.total
           this.updataLists()
-          this.$store.dispatch('loadAuthAppListPermission', 1).then(() => {
+          this.$store.dispatch('loadAuthAppListPermission', 1).then(req => {
             // 输出应用带模块
-            this.propsModule = this.$store.state.roles.AppList.map(view => {
+            this.propsModule = req.data.data.dataSet.rows.map(view => {
               return {
                 label: `ID: ${view.appKey} | 名称: ${view.name}`,
                 modules: []
               }
             })
             // 输出应用
-            this.options = this.$store.state.roles.AppList.map(view => {
+            this.options = req.data.data.dataSet.rows.map(view => {
               return {
                 value: view.appKey,
                 label: view.name
@@ -410,7 +410,7 @@
       }
     },
     watch: {
-      
+
     }
   };
 

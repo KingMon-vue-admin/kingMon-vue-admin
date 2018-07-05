@@ -5,17 +5,18 @@
       <el-dialog v-el-drag-dialog title="用户权限设置" :visible.sync="preDialogTableVisible">
         <el-form ref="form" :model="permissionTab" label-width="120px" style="width: 90%;margin: auto;">
           <el-form-item label="当前用户名称：">
-            <b>{{permissionTab.account}}</b>
+            <el-tag>{{permissionTab.account}}</el-tag>
           </el-form-item>
           <el-form-item label="当前用户ID：">
-            <b>{{permissionTab.id}}</b>
+            <el-tag>{{permissionTab.id}}</el-tag>
           </el-form-item>
           <!-- {{form}} -->
           <el-form-item label="选择App：">
-            <el-select class="kingMon-right" v-model="permissionTab.rules" @change="searchPrems" clearable style="width: 160px;" placeholder="选择App类型">
+            <el-select v-if="!Apps" class="kingMon-right" v-model="permissionTab.rules" @change="searchPrems" clearable style="width: 160px;" placeholder="选择App类型">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
+            <el-tag v-else>{{this.Apps.appKey}}</el-tag>
           </el-form-item>
           <el-form-item label="角色操作：">
             <el-transfer style="text-align: left; display:block;margin: auto; " v-model="value1" filterable :left-default-checked="[2, 3]"
@@ -52,17 +53,18 @@
       <el-dialog v-el-drag-dialog title="用户角色设置" :visible.sync="dialogTableVisible">
         <el-form ref="form" :model="form" label-width="120px" style="width: 90%;margin: auto;">
           <el-form-item label="当前用户名称：">
-            <b>{{form.account}}</b>
+            <el-tag>{{form.account}}</el-tag>
           </el-form-item>
           <el-form-item label="当前用户ID：">
-            <b>{{form.id}}</b>
+            <el-tag>{{form.id}}</el-tag>
           </el-form-item>
           <!-- {{form}} -->
           <el-form-item label="选择App：">
-            <el-select class="kingMon-right" v-model="form.rules" @change="searchAppRoles" clearable style="width: 160px;" placeholder="选择App类型">
+            <el-select v-if="!Apps" class="kingMon-right" v-model="form.rules" @change="searchAppRoles" clearable style="width: 160px;" placeholder="选择App类型">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
+            <el-tag v-else>{{this.Apps.appKey}}</el-tag>
           </el-form-item>
           <el-form-item label="角色操作：">
             <el-transfer style="text-align: left; display:block;margin: auto; " v-model="value3" filterable :left-default-checked="[2, 3]"
@@ -173,7 +175,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="用户组织" width="150">
+      <!-- <el-table-column class-name="status-col" label="用户组织" width="150">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
             <el-select v-model="form.appKey" clearable style="width:100%;" placeholder="分配组织">
@@ -183,21 +185,22 @@
           </template>
           <span v-else>{{orgList["'" + scope.row.defaultOrg + "'"]}}</span>
         </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="用户职位" width="200">
+      </el-table-column> -->
+      <!-- <el-table-column class-name="status-col" label="用户职位" width="200">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
             <el-input size="small" v-model="scope.row.defaultPosition"></el-input>
           </template>
           <span v-else>{{scope.row.defaultPosition}}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column class-name="status-col" label="用户角色" width="150">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
             <el-button type="primary" @click="opens(scope.row)">修改角色</el-button>
           </template>
-          <span v-else>{{userRoles[scope.row.defaultRole]}}</span>
+          <!-- <span v-else>{{userRoles[scope.row.defaultRole]}}</span> -->
+          <span v-else>{{`可编辑角色`}}</span>
         </template>
       </el-table-column>
       <el-table-column class-name="status-col" label="用户权限" width="150">
@@ -251,6 +254,9 @@
 </template>
 
 <script>
+  import {
+    mapGetters
+  } from 'vuex'
   const defaultFormThead = ["appKey", "status", "remark"];
   import elDragDialog from '@/directive/el-dragDialog' // base on element-ui
   import {
@@ -319,9 +325,12 @@
       created() {
           this.upApp()
         },
-        computed: {
-
-        },
+      computed: {
+      // 查看用户是否admin
+      ...mapGetters([
+        'Apps'
+      ])
+      },
         methods: {
           handlePremsChange(value, direction, movedKeys) {
             if (direction == 'left') {
@@ -440,8 +449,9 @@
           },
           // 展开查看
           opens(s) {
-            this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
-              console.log(req.data.data.dataSet.rows)
+              this.form = s
+            if(!this.Apps){
+              this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
               this.options = req.data.data.dataSet.rows.map(view => {
                 return {
                   value: view.appKey,
@@ -449,11 +459,14 @@
                 }
               })
               this.dialogTableVisible = true
-              this.form = s
               this.listLoading = false
             }).catch(() => {
               this.listLoading = false
             })
+            }else{
+              this.form.rules = this.Apps.appKey
+              this.searchAppRoles()
+            }
           },
           // 查询
           searchAppRoles() {
@@ -503,20 +516,25 @@
             })
           },
           opensPrems(s) {
-            this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
-              console.log(req.data.data.dataSet.rows)
-              this.options = req.data.data.dataSet.rows.map(view => {
-                return {
-                  value: view.appKey,
-                  label: view.name
-                }
-              })
-              this.preDialogTableVisible = true
               this.permissionTab = s
-              this.listLoading = false
-            }).catch(() => {
-              this.listLoading = false
-            })
+                this.preDialogTableVisible = true
+            if(!this.Apps){
+                this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
+                this.options = req.data.data.dataSet.rows.map(view => {
+                  return {
+                    value: view.appKey,
+                    label: view.name
+                  }
+                })
+                this.listLoading = false
+              }).catch(() => {
+                this.listLoading = false
+              })
+            }else{
+              this.permissionTab.rules = this.Apps.appKey
+              this.searchPrems() 
+            }
+            
           },
           // 删除
           confirmDel(row) {

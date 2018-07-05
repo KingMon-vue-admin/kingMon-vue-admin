@@ -1,14 +1,14 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-
       <el-dialog v-el-drag-dialog title="新增模块" :visible.sync="dialogTableVisible">
         <el-form ref="form" :model="form" label-width="100px" style="width: 90%;margin: auto;">
           <el-form-item label="所属appKey">
-            <el-select v-model="form.appKey" clearable style="width:200px;" placeholder="选择App类型">
+            <el-select v-if="!Apps" v-model="form.appKey" clearable style="width:200px;" placeholder="选择App类型">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
+            <el-tag v-else>{{this.Apps.appKey}}</el-tag>
           </el-form-item>
           <el-form-item label="模块代号">
             <el-input v-model="form.code"></el-input>
@@ -38,18 +38,15 @@
         </el-form>
       </el-dialog>
       <!-- 顶部操作框 -->
-      <el-select class="kingMon-right" v-model="searchs.appKey" clearable style="width: 160px;" placeholder="选择App类型">
+      <!-- 左侧选择最高权限 -->
+      <el-select v-if="!Apps" @change="test" class="kingMon-right" v-model="searchFrom.rules" clearable style="width: 160px;" placeholder="选择App类型">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
       <el-input size="small" class="kingMon-right" v-model="searchs.name" style="width: 200px;height: 35px;" placeholder="输入AppKey查询"></el-input>
       <el-button class="kingMon-right" type="primary" icon="el-icon-search" @click="searchApp">搜索</el-button>
       <el-button class="kingMon-right" type="primary" icon="el-icon-edit" style="margin-left: 0px;" @click="dialogTableVisible = true">添加</el-button>
-      <!-- 左侧选择最高权限 -->
-      <el-select @change="test" class="kingMon-right" v-model="searchFrom.rules" clearable style="width: 160px;float: right;" placeholder="选择App类型">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-        </el-option>
-      </el-select>
+      
     </div>
     <el-table :data="tableData" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
       <el-table-column class-name="status-col" label="模块ID" width="110">
@@ -94,10 +91,11 @@
       <el-table-column min-width="100px" label="模块所属App">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
-            <el-select v-model="scope.row.appKey" clearable style="width: 100%;" placeholder="选择App类型">
+            <el-select v-if="!Apps" v-model="scope.row.appKey" clearable style="width: 100%;" placeholder="选择App类型">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
+          <span v-else>{{ scope.row.appKey }}</span>
           </template>
           <span v-else>{{ scope.row.appKey }}</span>
         </template>
@@ -134,9 +132,11 @@
 </template>
 
 <script>
+  import {
+    mapGetters
+  } from 'vuex'
   const defaultFormThead = ["appKey", "status", "remark"];
   import elDragDialog from '@/directive/el-dragDialog' // base on element-ui
-
   export default {
     name: "moduleRoles",
     directives: {
@@ -183,9 +183,10 @@
       this.upApp()
     },
     computed: {
-      //   tableData (){
-      //       return1 
-      //   }  
+      // 查看用户是否admin
+      ...mapGetters([
+        'Apps'
+      ])
     },
     methods: {
       // 选择循环列表
@@ -230,17 +231,21 @@
       },
       // 查询所有权限
       upApp() {
-        this.$store.dispatch('loadAuthAppListModules', 1).then(req => {
-          this.options = req.data.data.dataSet.rows.map(view => {
-            return {
-              value: view.appKey,
-              label: view.name
-            }
+        if (this.Apps) {
+          this.test(this.Apps.appKey)
+        } else {
+          this.$store.dispatch('loadAuthAppListModules', 1).then(req => {
+            this.options = req.data.data.dataSet.rows.map(view => {
+              return {
+                value: view.appKey,
+                label: view.name
+              }
+            })
+            this.listLoading = false
+          }).catch(() => {
+            this.listLoading = false
           })
-          this.listLoading = false
-        }).catch(() => {
-          this.listLoading = false
-        })
+        }
       },
       // 分页改动
       handleCurrentChange(val) {
@@ -271,7 +276,7 @@
       addStatic() {
         this.$store.dispatch('addAuthModule', {
           status: (this.form.status == true ? 1 : 2),
-          appKey: this.form.appKey,
+          appKey: (!this.Apps ? this.form.appKey : this.Apps.appKey),
           name: this.form.appName,
           disIndex: this.form.disIndex,
           remark: this.form.remark,
@@ -282,8 +287,8 @@
             message: this.form.appName + ' - 添加成功',
             type: 'success'
           })
-          this.searchFrom.rules = this.form.appKey
-          this.reloadNows(this.form.appKey)
+          this.searchFrom.rules = (!this.Apps ? this.form.appKey : this.Apps.appKey)
+          this.reloadNows((!this.Apps ? this.form.appKey : this.Apps.appKey))
           this.form = {
             status: true
           }

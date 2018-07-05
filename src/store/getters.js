@@ -1,4 +1,3 @@
-
 const getters = {
   sidebar: state => state.app.sidebar,
   language: state => state.app.language,
@@ -14,7 +13,21 @@ const getters = {
   setting: state => state.user.setting,
   permission_routers: state => state.permission.routers,
   addRouters: state => state.permission.addRouters,
-  errorLogs: state => state.errorLog.logs
+  errorLogs: state => state.errorLog.logs,
+  Apps: () => {
+    if (sessionStorage.getItem('user') !== 'admin') {
+      return {
+        appKey: 'APP_ROOT',
+        id: 9,
+        name: 'resolve',
+        disIndex: 1,
+        remark: 'resolve',
+        status: 1
+      }
+    } else {
+      return false
+    }
+  }
   // ...states
 }
 export default getters

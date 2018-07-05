@@ -5,22 +5,24 @@
       <el-dialog v-el-drag-dialog title="用户权限设置" :visible.sync="preDialogTableVisible">
         <el-form ref="form" :model="permissionTab" label-width="120px" style="width: 90%;margin: auto;">
           <el-form-item label="当前用户名称：">
-            <b>{{permissionTab.account}}</b>
+            <el-tag>{{permissionTab.name}}</el-tag>
           </el-form-item>
           <el-form-item label="当前用户ID：">
-            <b>{{permissionTab.id}}</b>
+            <el-tag>{{permissionTab.id}}</el-tag>
           </el-form-item>
           <!-- {{form}} -->
           <el-form-item label="选择App：">
-            <el-select class="kingMon-right" v-model="permissionTab.rules" @change="searchPrems" clearable style="width: 160px;" placeholder="选择App类型">
+            <el-select v-if="!Apps" class="kingMon-right" v-model="permissionTab.rules" @change="searchPrems" clearable style="width: 160px;"
+              placeholder="选择App类型">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
+            <el-tag v-else>{{Apps.appKey}}</el-tag>
           </el-form-item>
-          <el-form-item label="角色操作：">
+          <el-form-item label="权限操作：">
             <el-transfer style="text-align: left; display:block;margin: auto; " v-model="value1" filterable :left-default-checked="[2, 3]"
-              :right-default-checked="[1]" :titles="['未拥有角色', '已拥有角色']" :button-texts="['删除角色', '增加角色']"
-              @change="handlePremsChange" :data="userPremsConfig.all">
+              :right-default-checked="[1]" :titles="['未拥有权限', '已拥有权限']" :button-texts="['删除权限', '增加权限']" @change="handlePremsChange"
+              :data="userPremsConfig.all">
               <!-- <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
             <el-button class="transfer-footer" slot="right-footer" size="small">操作</el-button> -->
             </el-transfer>
@@ -52,10 +54,11 @@
       <el-dialog v-el-drag-dialog title="新增角色" :visible.sync="dialogTableVisible">
         <el-form ref="form" :model="form" label-width="100px" style="width: 90%;margin: auto;">
           <el-form-item label="所属appKey">
-            <el-select v-model="form.appKey" clearable style="width:200px;" placeholder="选择App类型">
+            <el-select v-if="!Apps" v-model="form.appKey" clearable style="width:200px;" placeholder="选择App类型">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
+            <el-tag>{{this.Apps.appKey}}</el-tag>
           </el-form-item>
           <el-form-item label="角色code">
             <el-input v-model="form.roleCode"></el-input>
@@ -143,10 +146,11 @@
       <el-table-column min-width="100px" label="角色所属App">
         <template slot-scope="scope">
           <template v-if="scope.row.edit">
-            <el-select v-model="scope.row.appKey" clearable style="width: 100%;" placeholder="选择App类型">
+            <el-select v-if="!Apps" v-model="scope.row.appKey" clearable style="width: 100%;" placeholder="选择App类型">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
+            <span v-else>{{ scope.row.appKey }}</span>
           </template>
           <span v-else>{{ scope.row.appKey }}</span>
         </template>
@@ -176,6 +180,9 @@
 </template>
 
 <script>
+  import {
+    mapGetters
+  } from 'vuex'
   const defaultFormThead = ["appKey", "status", "remark"];
   import elDragDialog from '@/directive/el-dragDialog' // base on element-ui
 
@@ -220,12 +227,14 @@
       this.upApp()
     },
     computed: {
-
+      // 查看用户是否admin
+      ...mapGetters([
+        'Apps'
+      ])
     },
     methods: {
       // 查询
       searchPrems() {
-        console.log(this.permissionTab)
         this.$store.dispatch('loadPermDataSetForRoleAssign', {
           roleId: this.permissionTab.id,
           appKey: this.permissionTab.rules,
@@ -277,22 +286,28 @@
       },
       // 角色权限编辑
       opensPrems(s) {
-        this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
-          console.log(req.data.data.dataSet.rows)
-          this.options = req.data.data.dataSet.rows.map(view => {
-            return {
-              value: view.appKey,
-              label: view.name
-            }
+        this.permissionTab.rules = ""
+        this.userPremsConfig = {}
+        this.preDialogTableVisible = true
+        this.permissionTab = s
+        if (!this.App) {
+          this.permissionTab.rules = this.Apps.appKey
+          this.searchPrems()
+        } else {
+          this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
+            console.log(req.data.data.dataSet.rows)
+            this.options = req.data.data.dataSet.rows.map(view => {
+              return {
+                value: view.appKey,
+                label: view.name
+              }
+            })
+            this.listLoading = false
+          }).catch(() => {
+            this.listLoading = false
           })
-          this.permissionTab.rules = ""
-          this.userPremsConfig = {}
-          this.preDialogTableVisible = true
-          this.permissionTab = s
-          this.listLoading = false
-        }).catch(() => {
-          this.listLoading = false
-        })
+        }
+
       },
       // 选择循环列表
       test(val) {
@@ -348,7 +363,7 @@
       addStatic() {
         this.$store.dispatch('addRole', {
           status: (this.form.status == true ? 1 : 2),
-          appKey: this.form.appKey,
+          appKey: (!this.Apps ? this.form.appKey : this.Apps.appKey),
           name: this.form.name,
           roleCode: this.form.roleCode,
           description: this.form.description
@@ -357,7 +372,7 @@
             message: this.form.name + ' - 添加成功',
             type: 'success'
           })
-          this.searchFrom.rules = this.form.appKey
+          this.searchFrom.rules = (!this.Apps ? this.form.appKey : this.Apps.appKey)
           this.upApp()
           this.form = {
             status: true
@@ -434,10 +449,10 @@
           }
         })
       },
-      
+
     },
     watch: {
-     
+
     }
   };
 

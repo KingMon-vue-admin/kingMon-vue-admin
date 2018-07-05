@@ -61,6 +61,7 @@ export default {
   name: "login",
   data() {
     const validateUsername = (rule, value, callback) => {
+      this.nowName = value
       if (value.length > 3) {
         // callback(new Error("Please enter the correct user name"));
         callback();
@@ -76,6 +77,7 @@ export default {
       }
     };
     return {
+      nowName:"",
       captchaMsg: "",
       captchaImg: "",
       loginForm: {
@@ -129,12 +131,13 @@ export default {
             .then(() => {
               this.loading = false;
               this.$router.push({ path: "/" });
+              console.log()
+              sessionStorage.setItem("user", this.nowName)
             })
             .catch(() => {
               this.loading = false;
             });
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
