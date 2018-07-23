@@ -87,7 +87,7 @@ export const asyncRouterMap = [
       { path: 'userRoles', component: () => import('@/views/roles/userRoles'), name: 'userRoles', meta: { title: 'RoleManagement', noCache: true }},
       { path: 'userManager', component: () => import('@/views/roles/userManager'), name: 'userManager', meta: { title: 'userManagement', noCache: true }},
       { path: 'sysOrg', component: () => import('@/views/roles/sysOrg'), name: 'sysOrg', meta: { title: 'OrganizationManagement', noCache: true }},
-      { path: 'permission', component: () => import('@/views/roles/permission'), name: 'permission', meta: { title: 'AuthorityManagement', noCache: true }}
+      { path: 'permission', component: () => import('@/views/roles/permission'), name: 'permission', meta: { title: 'AuthorityManagement', noCache: true }},
       // { path: 'userRightsManagement', component: () => import('@/views/roles/userRightsManagement'), name: 'userRightsManagement', meta: { title: '用户权限管理', noCache: true }}
     ]
   },

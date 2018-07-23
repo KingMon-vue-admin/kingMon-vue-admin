@@ -35,7 +35,6 @@
           <el-form-item label="权限描述">
             <el-input type="textarea" v-model="form.description"></el-input>
           </el-form-item>
-
           <el-form-item>
             <el-button type="primary" @click="addPermission">立即创建</el-button>
             <el-button @click="dialogTableVisible = false">取消</el-button>

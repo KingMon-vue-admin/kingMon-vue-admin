@@ -9,7 +9,7 @@
       text-color="#bfcbd9"
       active-text-color="#409EFF"
     >
-      <sidebar-item :routes="permission_routers"></sidebar-item>
+      <sidebar-item :routes="routers_menus"></sidebar-item>
     </el-menu>
   </el-scrollbar>
 </template>
@@ -20,8 +20,13 @@ import SidebarItem from './SidebarItem'
 
 export default {
   components: { SidebarItem },
+  created() {
+   
+    console.log(this.routers_menus,this.permission_routers,'xxxxxx')
+  },
   computed: {
     ...mapGetters([
+      'routers_menus',
       'permission_routers',
       'sidebar'
     ]),

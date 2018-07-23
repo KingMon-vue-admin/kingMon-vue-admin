@@ -1,28 +1,27 @@
 <template>
   <div class="menu-wrapper">
-    <template v-for="item in routes" v-if="!item.hidden&&item.children">
-
-      <router-link v-if="hasOneShowingChildren(item.children) && !item.children[0].children&&!item.alwaysShow" :to="item.path+'/'+item.children[0].path"
-        :key="item.children[0].name">
-        <el-menu-item :index="item.path+'/'+item.children[0].path" :class="{'submenu-title-noDropdown':!isNest}">
-          <svg-icon v-if="item.children[0].meta&&item.children[0].meta.icon" :icon-class="item.children[0].meta.icon"></svg-icon>
-          <span v-if="item.children[0].meta&&item.children[0].meta.title" slot="title">{{generateTitle(item.children[0].meta.title)}}</span>
+    <template v-for="item in routes" v-if="!item.hidden&&item.items">
+      <router-link v-if="hasOneShowingChildren(item.items) && !item.items[0].items&&!item.alwaysShow" :to="item.url+'/'+item.items[0].url"
+        :key="item.items[0].title">
+        <el-menu-item :index="item.url+'/'+item.items[0].url" :class="{'submenu-title-noDropdown':!isNest}">
+          <svg-icon v-if="item.items[0].icon&&item.items[0].icon" :icon-class="item.items[0].icon"></svg-icon>
+          <span v-if="item.items[0].title&&item.items[0].title" slot="title">{{generateTitle(item.items[0].title)}}</span>
         </el-menu-item>
       </router-link>
 
-      <el-submenu v-else :index="item.name||item.path" :key="item.name">
+      <el-submenu v-else :index="item.title||item.url" :key="item.title">
         <template slot="title">
-          <svg-icon v-if="item.meta&&item.meta.icon" :icon-class="item.meta.icon"></svg-icon>
-          <span v-if="item.meta&&item.meta.title" slot="title">{{generateTitle(item.meta.title)}}</span>
+          <svg-icon v-if="item.icon&&item.icon" :icon-class="item.icon"></svg-icon>
+          <span v-if="item.title&&item.title" slot="title">{{generateTitle(item.title)}}</span>
         </template>
 
-        <template v-for="child in item.children" v-if="!child.hidden">
-          <sidebar-item :is-nest="true" class="nest-menu" v-if="child.children&&child.children.length>0" :routes="[child]" :key="child.path"></sidebar-item>
+        <template v-for="child in item.items" v-if="!child.hidden">
+          <sidebar-item :is-nest="true" class="nest-menu" v-if="child.items&&child.items.length>0" :routes="[child]" :key="child.url"></sidebar-item>
 
-          <router-link v-else :to="item.path+'/'+child.path" :key="child.name">
-            <el-menu-item :index="item.path+'/'+child.path">
-              <svg-icon v-if="child.meta&&child.meta.icon" :icon-class="child.meta.icon"></svg-icon>
-              <span v-if="child.meta&&child.meta.title" slot="title">{{generateTitle(child.meta.title)}}</span>
+          <router-link v-else :to="child.url" :key="child.title">
+            <el-menu-item :index="child.url">
+              <svg-icon v-if="child.icon&&child.icon" :icon-class="child.icon"></svg-icon>
+              <span v-if="child.title&&child.title" slot="title">{{generateTitle(child.title)}}</span>
             </el-menu-item>
           </router-link>
         </template>
@@ -33,31 +32,33 @@
 </template>
 
 <script>
-import { generateTitle } from '@/utils/i18n'
-
-export default {
-  name: 'SidebarItem',
-  props: {
-    routes: {
-      type: Array
-    },
-    isNest: {
-      type: Boolean,
-      default: false
-    }
-  },
-  methods: {
-    hasOneShowingChildren(children) {
-      const showingChildren = children.filter(item => {
-        return !item.hidden
-      })
-      if (showingChildren.length === 1) {
-        return true
-      }
-      return false
-    },
+  import {
     generateTitle
-  }
-}
-</script>
+  } from '@/utils/i18n'
 
+  export default {
+    name: 'SidebarItem',
+    props: {
+      routes: {
+        type: Array
+      },
+      isNest: {
+        type: Boolean,
+        default: false
+      }
+    },
+    methods: {
+      hasOneShowingChildren(children) {
+        const showingChildren = children.filter(item => {
+          return !item.hidden
+        })
+        if (showingChildren.length === 1) {
+          return true
+        }
+        return false
+      },
+      generateTitle
+    }
+  }
+
+</script>

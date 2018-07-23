@@ -131,7 +131,6 @@ export default {
             .then(() => {
               this.loading = false;
               this.$router.push({ path: "/" });
-              console.log()
               sessionStorage.setItem("user", this.nowName)
             })
             .catch(() => {
