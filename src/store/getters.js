@@ -14,7 +14,8 @@ const getters = {
   permission_routers: state => state.permission.routers,
   addRouters: state => state.permission.addRouters,
   errorLogs: state => state.errorLog.logs,
-  routers_menus: state => state.user.routers,
+  routers_menus: state => state.permission.routers,
+  // routers_menus: state => state.user.routers,
   Apps: () => {
     if (sessionStorage.getItem('user') != 'admin') {
       return {

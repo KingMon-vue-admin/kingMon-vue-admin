@@ -111,7 +111,7 @@ export default {
       // }).catch(() => {
       //   alert("图片加载失败")
       // })
-      this.captchaImg = `http://172.25.253.133:83/api/auth/captcha?${Math.floor(
+      this.captchaImg = `test/api/auth/captcha?${Math.floor(
         Math.random() * 100
       )}`;
     },
