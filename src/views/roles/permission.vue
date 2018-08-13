@@ -35,6 +35,7 @@
           <el-form-item label="权限描述">
             <el-input type="textarea" v-model="form.description"></el-input>
           </el-form-item>
+
           <el-form-item>
             <el-button type="primary" @click="addPermission">立即创建</el-button>
             <el-button @click="dialogTableVisible = false">取消</el-button>
@@ -145,7 +146,7 @@
             <el-switch v-else v-model="scope.row.isCommon"></el-switch>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="Actions" width="300">
+        <el-table-column align="center" label="编辑" width="300">
           <template slot-scope="scope">
             <el-button v-if="scope.row.edit" type="success" @click="confirmEdit(scope.row)" size="small" icon="el-icon-circle-check-outline">确认</el-button>
             <el-button v-if="scope.row.edit" type="danger" @click="confirmDel(scope.row)" size="small" icon="el-icon-circle-check-outline">删除</el-button>
@@ -358,6 +359,19 @@
       },
       // 修改
       confirmEdit(row) {
+        let locks = false;
+          for (let key in row){
+        console.log(row[key])
+        if(row[key].length == 0){
+          this.$message({
+            type: "info",
+            message: "所填项不能为空！"
+          });
+          locks = true
+          break;
+        }
+      }
+      if(locks) return
         if (row.where != undefined) {
           row.moduleId = ((row.where[row.where.length - 1].split('|'))[0]).substr(3)
         }
@@ -392,6 +406,10 @@
       },
       // 查询
       addPermission() {
+        if (attributeCount(this.form) != 9) return this.$message({
+            type: "info",
+            message: "所填项不能为空！"
+          });
         let Form = this.form
         Form.moduleId = ((this.form.moduleId[this.form.moduleId.length - 1].split('|'))[0]).substr(3)
         Form.status = (this.form ? 1 : 2)

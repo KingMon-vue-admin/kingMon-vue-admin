@@ -75,7 +75,7 @@ export default {
     setOptions({ expectedData, actualData } = {}) {
       this.chart.setOption({
         xAxis: {
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: ['9-1', '9-2', '9-3', '9-4', '9-5', '9-6', '9-7'],
           boundaryGap: false,
           axisTick: {
             show: false
@@ -101,10 +101,10 @@ export default {
           }
         },
         legend: {
-          data: ['expected', 'actual']
+          data: ['学生到达人数', '陪同人数']
         },
         series: [{
-          name: 'expected', itemStyle: {
+          name: '学生到达人数', itemStyle: {
             normal: {
               color: '#FF005A',
               lineStyle: {
@@ -120,7 +120,7 @@ export default {
           animationEasing: 'cubicInOut'
         },
         {
-          name: 'actual',
+          name: '陪同人数',
           smooth: true,
           type: 'line',
           itemStyle: {

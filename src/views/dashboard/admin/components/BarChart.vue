@@ -66,7 +66,7 @@ export default {
         },
         xAxis: [{
           type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: ['旅游学院', '经济管理学院', '会计学院', '艺术学院', '信息技术学院', '文化传播学院', '外国语学院'],
           axisTick: {
             alignWithLabel: true
           }
@@ -78,21 +78,21 @@ export default {
           }
         }],
         series: [{
-          name: 'pageA',
+          name: 'M',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',
           data: [79, 52, 200, 334, 390, 330, 220],
           animationDuration
         }, {
-          name: 'pageB',
+          name: 'L',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',
           data: [80, 52, 200, 334, 390, 330, 220],
           animationDuration
         }, {
-          name: 'pageC',
+          name: 'XL',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',

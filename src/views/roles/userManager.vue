@@ -12,7 +12,8 @@
           </el-form-item>
           <!-- {{form}} -->
           <el-form-item label="选择App：">
-            <el-select v-if="!Apps" class="kingMon-right" v-model="permissionTab.rules" @change="searchPrems" clearable style="width: 160px;" placeholder="选择App类型">
+            <el-select v-if="!Apps" class="kingMon-right" v-model="permissionTab.rules" @change="searchPrems" clearable style="width: 160px;"
+              placeholder="选择App类型">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
@@ -60,7 +61,8 @@
           </el-form-item>
           <!-- {{form}} -->
           <el-form-item label="选择App：">
-            <el-select v-if="!Apps" class="kingMon-right" v-model="form.rules" @change="searchAppRoles" clearable style="width: 160px;" placeholder="选择App类型">
+            <el-select v-if="!Apps" class="kingMon-right" v-model="form.rules" @change="searchAppRoles" clearable style="width: 160px;"
+              placeholder="选择App类型">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
@@ -250,6 +252,20 @@
     <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage2"
       :page-sizes="[12, 15, 20, 25]" layout="sizes, prev, pager, next" :total="total" style="margin-top: 24px;">
     </el-pagination>
+    <!-- <el-upload
+  class="upload-demo"
+  action="http://127.0.0.1:9527/base/baseFiles/uploadFiles"
+  :on-preview="handlePreview"
+  :on-remove="handleRemove"
+  :before-remove="beforeRemove"
+  multiple
+  :limit="3"
+  :on-exceed="handleExceed"
+  :file-list="fileList">
+  <el-button size="small" type="primary">点击上传</el-button>
+  <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+</el-upload> -->
+    <!-- /base/baseFiles/uploadFiles -->
   </div>
 </template>
 
@@ -270,6 +286,7 @@
     },
     data() {
       return {
+        fileList: [],
         // 权限修改
         value1: [],
         userPremsConfig: {},
@@ -279,7 +296,7 @@
         preDialogTableVisible: false,
         value3: [],
         renderFunc(h, option) {
-          return <span> {
+          return <span > {
             option.label
           } </span>;},
           // 分页总和
@@ -325,12 +342,12 @@
       created() {
           this.upApp()
         },
-      computed: {
-      // 查看用户是否admin
-      ...mapGetters([
-        'Apps'
-      ])
-      },
+        computed: {
+          // 查看用户是否admin
+          ...mapGetters([
+            'Apps'
+          ])
+        },
         methods: {
           handlePremsChange(value, direction, movedKeys) {
             if (direction == 'left') {
@@ -401,16 +418,16 @@
           // 查询所有权限
           upApp(page = 1, rows = 12) {
             // 查询用户
-            this.$store.dispatch('loadOrgListX').then(() => {
-              this.orgListSelect = this.$store.state.userManager.sysOrgs.data.map(row => {
-                return {
-                  id: row.orgTreeCode,
-                  name: row.name
-                }
-              })
-              for (var value of this.$store.state.userManager.sysOrgs.data) {
-                this.orgList["'" + (value.orgTreeCode || 0) + "'"] = value.name
-              }
+            // this.$store.dispatch('loadOrgListX').then(() => {
+            //   this.orgListSelect = this.$store.state.userManager.sysOrgs.data.map(row => {
+            //     return {
+            //       id: row.orgTreeCode,
+            //       name: row.name
+            //     }
+            //   })
+            //   for (var value of this.$store.state.userManager.sysOrgs.data) {
+            //     this.orgList["'" + (value.orgTreeCode || 0) + "'"] = value.name
+            //   }
               this.$store.dispatch('loadAuthUserList', {
                 page: page,
                 rows: rows
@@ -435,7 +452,7 @@
 
               })
               // 查询角色列表
-            }).catch(err => {})
+            // }).catch(err => {})
           },
           // 分页改动
           handleCurrentChange(val) {
@@ -449,21 +466,21 @@
           },
           // 展开查看
           opens(s) {
-              this.form = s
-            if(!this.Apps){
+            this.form = s
+            if (!this.Apps) {
               this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
-              this.options = req.data.data.dataSet.rows.map(view => {
-                return {
-                  value: view.appKey,
-                  label: view.name
-                }
+                this.options = req.data.data.dataSet.rows.map(view => {
+                  return {
+                    value: view.appKey,
+                    label: view.name
+                  }
+                })
+                this.dialogTableVisible = true
+                this.listLoading = false
+              }).catch(() => {
+                this.listLoading = false
               })
-              this.dialogTableVisible = true
-              this.listLoading = false
-            }).catch(() => {
-              this.listLoading = false
-            })
-            }else{
+            } else {
               this.form.rules = this.Apps.appKey
               this.searchAppRoles()
             }
@@ -516,10 +533,10 @@
             })
           },
           opensPrems(s) {
-              this.permissionTab = s
-                this.preDialogTableVisible = true
-            if(!this.Apps){
-                this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
+            this.permissionTab = s
+            this.preDialogTableVisible = true
+            if (!this.Apps) {
+              this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
                 this.options = req.data.data.dataSet.rows.map(view => {
                   return {
                     value: view.appKey,
@@ -530,11 +547,11 @@
               }).catch(() => {
                 this.listLoading = false
               })
-            }else{
+            } else {
               this.permissionTab.rules = this.Apps.appKey
-              this.searchPrems() 
+              this.searchPrems()
             }
-            
+
           },
           // 删除
           confirmDel(row) {

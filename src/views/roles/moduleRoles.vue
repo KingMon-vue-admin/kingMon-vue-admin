@@ -135,7 +135,7 @@
   import {
     mapGetters
   } from 'vuex'
-  const defaultFormThead = ["appKey", "status", "remark"];
+  // const defaultFormThead = ["appKey", "status", "remark"];
   import elDragDialog from '@/directive/el-dragDialog' // base on element-ui
   export default {
     name: "moduleRoles",
@@ -176,7 +176,7 @@
         // 表格集合
         tableData: [],
         key: 1, // table key
-        formThead: defaultFormThead // 默认表头 Default header
+        // formThead: defaultFormThead // 默认表头 Default header
       };
     },
     created() {

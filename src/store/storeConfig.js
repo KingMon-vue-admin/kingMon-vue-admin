@@ -1,16 +1,16 @@
-import app from './modules/app'
-import errorLog from './modules/errorLog'
-import permission from './modules/permission'
-import tagsView from './modules/tagsView'
-import user from './modules/user'
-import roles from './modules/roles'
-import modules from './modules/modules'
-import userRoles from './modules/userRoles'
-import userManager from './modules/userManager'
-import sysOrg from './modules/sysOrg'
-import PermissionRoles from './modules/PermissionRoles'
-import userRightsManagement from './modules/userRightsManagement'
-
+import app from "./modules/app";
+import errorLog from "./modules/errorLog";
+import permission from "./modules/permission";
+import tagsView from "./modules/tagsView";
+import user from "./modules/user";
+import roles from "./modules/roles";
+import modules from "./modules/modules";
+import userRoles from "./modules/userRoles";
+import userManager from "./modules/userManager";
+import sysOrg from "./modules/sysOrg";
+import PermissionRoles from "./modules/PermissionRoles";
+import userRightsManagement from "./modules/userRightsManagement";
+import loadComboboVo from "./modules/loadComboboVo";
 const Array = [
   app,
   errorLog,
@@ -23,8 +23,9 @@ const Array = [
   userManager,
   sysOrg,
   PermissionRoles,
-  userRightsManagement
-]
+  userRightsManagement,
+  loadComboboVo
+];
 
 export default {
   app,
@@ -38,7 +39,8 @@ export default {
   userManager,
   sysOrg,
   PermissionRoles,
-  userRightsManagement
-}
+  userRightsManagement,
+  loadComboboVo
+};
 
-export { Array }
+export { Array };

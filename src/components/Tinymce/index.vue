@@ -57,6 +57,7 @@ export default {
   },
   mounted() {
     this.initTinymce()
+    // URL.createObjectURL(blob)
   },
   activated() {
     this.initTinymce()
@@ -75,6 +76,7 @@ export default {
         toolbar: this.toolbar.length > 0 ? this.toolbar : toolbar,
         menubar: this.menubar,
         plugins: plugins,
+        language: "zh_CN",
         end_container_on_empty_block: true,
         powerpaste_word_import: 'clean',
         code_dialog_height: 450,
@@ -159,6 +161,7 @@ export default {
 </script>
 
 <style scoped>
+
 .tinymce-container {
   position: relative;
 }

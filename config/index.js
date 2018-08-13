@@ -11,7 +11,12 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/test': {
-        target: 'http://172.25.253.133:83',
+        // target: 'http://172.25.253.133',
+        // target: 'http://192.168.1.66:80',
+        // target: 'http://172.25.253.147',
+        target: 'http://172.25.253.145',
+        // target: 'http://172.25.253.180',
+        // target: 'http://192.168.1.158',
         changeOrigin: true,
         pathRewrite: {
           '^/test': ''
@@ -70,7 +75,7 @@ module.exports = {
      * then assetsPublicPath should be set to "/bar/".
      * In most cases please use '/' !!!
      */
-    assetsPublicPath: '/', // If you are deployed on the root path, please use '/'
+    assetsPublicPath: './', // If you are deployed on the root path, please use '/'
 
     /**
      * Source Maps

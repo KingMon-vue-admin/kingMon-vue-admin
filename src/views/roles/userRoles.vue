@@ -21,7 +21,7 @@
           </el-form-item>
           <el-form-item label="权限操作：">
             <el-transfer style="text-align: left; display:block;margin: auto; " v-model="value1" filterable :left-default-checked="[2, 3]"
-              :right-default-checked="[1]" :titles="['未拥有权限', '已拥有权限']" :button-texts="['删除权限', '增加权限']" @change="handlePremsChange"
+              :right-default-checked="[1]" :titles="['未  拥有权限', '已拥有权限']" :button-texts="['删除权限', '增加权限']" @change="handlePremsChange"
               :data="userPremsConfig.all">
               <!-- <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
             <el-button class="transfer-footer" slot="right-footer" size="small">操作</el-button> -->
@@ -168,10 +168,9 @@
           <el-button v-if="scope.row.edit" type="success" @click="confirmEdit(scope.row)" size="small" icon="el-icon-circle-check-outline">确认</el-button>
           <el-button v-if="scope.row.edit" type="danger" @click="confirmDel(scope.row)" size="small" icon="el-icon-circle-check-outline">删除</el-button>
           <el-button v-if="scope.row.edit" size="small" icon="el-icon-refresh" type="warning" @click="cancelEdit(scope.row)">取消</el-button>
-          <el-button v-else type="primary" @click='scope.row.edit=!scope.row.edit' size="small" icon="el-icon-edit">编辑</el-button>
+          <el-button v-else type="primary" @click='scope.row.edit=!scope.row.edit' size="small" icon="el-icon-edit" >编辑</el-button>
         </template>
       </el-table-column>
-
     </el-table>
     <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage2"
       :page-sizes="[12, 15, 20, 25]" layout="sizes, prev, pager, next" :total="total" style="margin-top: 24px;">
@@ -180,369 +179,432 @@
 </template>
 
 <script>
-  import {
-    mapGetters
-  } from 'vuex'
-  const defaultFormThead = ["appKey", "status", "remark"];
-  import elDragDialog from '@/directive/el-dragDialog' // base on element-ui
-
-  export default {
-    name: "userRoles",
-    directives: {
-      elDragDialog
-    },
-    data() {
-      return {
-        // 权限修改
-        value1: [],
-        userPremsConfig: {},
-        // 权限修改内容
-        permissionTab: {},
-        // 权限修改
-        preDialogTableVisible: false,
-        // 分页总数
-        total: 0,
-        nowApps: "",
-        // 默认页数
-        currentPage2: 1,
-        // 查询
-        searchs: {},
-        // 新增用戶
-        form: {
-          status: true
-        },
-        dialogTableVisible: false,
-        // 顺序
-        options: [],
-        // 搜索内容集合
-        searchFrom: {},
-        // 是否loading
-        listLoading: false,
-        // 表格集合
-        tableData: [],
-        key: 1, // table key
-      };
-    },
-    created() {
-      this.upApp()
-    },
-    computed: {
-      // 查看用户是否admin
-      ...mapGetters([
-        'Apps'
-      ])
-    },
-    methods: {
+import { mapGetters } from "vuex";
+import elDragDialog from "@/directive/el-dragDialog"; // base on element-ui
+export default {
+  name: "userRoles",
+  directives: {
+    elDragDialog,
+    run() {
+      console.log(arguments);
+    }
+  },
+  data() {
+    return {
+      // 权限修改
+      value1: [],
+      tes: {
+        a: 1,
+        b: 2
+      },
+      userPremsConfig: {},
+      // 权限修改内容
+      permissionTab: {},
+      // 权限修改
+      preDialogTableVisible: false,
+      // 分页总数
+      total: 0,
+      nowApps: "",
+      // 默认页数
+      currentPage2: 1,
       // 查询
-      searchPrems() {
-        this.$store.dispatch('loadPermDataSetForRoleAssign', {
+      searchs: {},
+      // 新增用戶
+      form: {
+        status: true
+      },
+      dialogTableVisible: false,
+      // 顺序
+      options: [],
+      // 搜索内容集合
+      searchFrom: {},
+      // 是否loading
+      listLoading: false,
+      // 表格集合
+      tableData: [],
+      key: 1 // table key
+    };
+  },
+  created() {
+    this.upApp();
+  },
+  template: "<Aps/>",
+  computed: {
+    // 查看用户是否admin
+    ...mapGetters(["Apps"])
+  },
+  methods: {
+    async testruns() {
+      await this.$store.dispatch("testas", { event, ...this.tes });
+    },
+    // 测试loading
+    register(s) {
+      console.log("测试加载", s);
+      console.log(this);
+    },
+    // 查询
+    searchPrems() {
+      this.$store
+        .dispatch("loadPermDataSetForRoleAssign", {
           roleId: this.permissionTab.id,
-          appKey: this.permissionTab.rules,
-        }).then(req => {
-          console.log(req, "thisCallback")
-          this.userRolesConfig = req
-          let alls = [...req.yes, ...req.no]
+          appKey: this.permissionTab.rules
+        })
+        .then(req => {
+          console.log(req, "thisCallback");
+          this.userRolesConfig = req;
+          let alls = [...req.yes, ...req.no];
           this.userPremsConfig.all = alls.map(row => {
             return {
               id: row.id,
               key: row.id,
               label: row.name,
               roleCode: row.roleCode
-            }
-          })
+            };
+          });
           this.value1 = req.yes.map(row => {
-            return row.id
-          })
-        }).catch(err => {
-          console.log(err)
+            return row.id;
+          });
         })
-      },
-      // 权限编辑
-      handlePremsChange(value, direction, movedKeys) {
-        if (direction == 'left') {
-          this.$store.dispatch('removePermsFromRole', {
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    // 权限编辑
+    handlePremsChange(value, direction, movedKeys) {
+      if (direction == "left") {
+        this.$store
+          .dispatch("removePermsFromRole", {
             permIds: movedKeys.toString(),
             roleId: this.permissionTab.id
-          }).then(() => {
-            this.searchPrems()
+          })
+          .then(() => {
+            this.searchPrems();
             this.$message({
-              type: 'success',
-              message: '删除成功!'
-            });
-          }).catch(err => {})
-        } else {
-          // 增加角色
-          this.$store.dispatch('addPermsToRole', {
-            permIds: movedKeys.toString(),
-            roleId: this.permissionTab.id
-          }).then(() => {
-            this.searchPrems()
-            this.$message({
-              type: 'success',
-              message: '增加角色成功!'
+              type: "success",
+              message: "删除成功!"
             });
           })
-        }
-      },
-      // 角色权限编辑
-      opensPrems(s) {
-        this.permissionTab.rules = ""
-        this.userPremsConfig = {}
-        this.preDialogTableVisible = true
-        this.permissionTab = s
-        if (!this.App) {
-          this.permissionTab.rules = this.Apps.appKey
-          this.searchPrems()
-        } else {
-          this.$store.dispatch('loadAuthAppListManger', 1).then(req => {
-            console.log(req.data.data.dataSet.rows)
+          .catch(err => {});
+      } else {
+        // 增加角色
+        this.$store
+          .dispatch("addPermsToRole", {
+            permIds: movedKeys.toString(),
+            roleId: this.permissionTab.id
+          })
+          .then(() => {
+            this.searchPrems();
+            this.$message({
+              type: "success",
+              message: "增加角色成功!"
+            });
+          });
+      }
+    },
+    // 角色权限编辑
+    opensPrems(s) {
+      this.permissionTab.rules = "";
+      this.userPremsConfig = {};
+      this.preDialogTableVisible = true;
+      this.permissionTab = s;
+      if (!this.App) {
+        this.permissionTab.rules = this.Apps.appKey;
+        this.searchPrems();
+      } else {
+        this.$store
+          .dispatch("loadAuthAppListManger", 1)
+          .then(req => {
+            console.log(req.data.data.dataSet.rows);
             this.options = req.data.data.dataSet.rows.map(view => {
               return {
                 value: view.appKey,
                 label: view.name
-              }
-            })
-            this.listLoading = false
-          }).catch(() => {
-            this.listLoading = false
+              };
+            });
+            this.listLoading = false;
           })
-        }
-
-      },
-      // 选择循环列表
-      test(val) {
-        this.listLoading = true;
-        this.$store.dispatch('loadAuthRoleList', {
+          .catch(() => {
+            this.listLoading = false;
+          });
+      }
+    },
+    // 选择循环列表
+    test(val) {
+      this.listLoading = true;
+      this.$store
+        .dispatch("loadAuthRoleList", {
           params: 1,
           appKey: val
-        }).then(() => {
-          this.updataLists()
-          this.listLoading = false
-        }).catch(() => {
-          this.listLoading = false
         })
-      },
+        .then(() => {
+          this.updataLists();
+          this.listLoading = false;
+        })
+        .catch(() => {
+          this.listLoading = false;
+        });
+    },
 
-      // 查询所有权限
-      upApp(page = 1, rows = 12) {
-        this.listLoading = true;
-        this.$store.dispatch('loadAuthRoleList', {
+    // 查询所有权限
+    upApp(page = 1, rows = 12) {
+      this.listLoading = true;
+      this.$store
+        .dispatch("loadAuthRoleList", {
           params: 1,
           page: page,
           rows: rows
-        }).then(req => {
-          this.total = req.total
-          this.updataLists()
-          this.$store.dispatch('loadAuthAppListApp', 1).then(req => {
-            console.log(req)
-            this.options = this.$store.state.roles.AppList.map(view => {
-              return {
-                value: view.appKey,
-                label: view.name
-              }
-            })
-            this.listLoading = false
-          }).catch(() => {
-            this.listLoading = false
-          })
-        }).catch(() => {
-          this.listLoading = false
         })
-      },
-      // 分页改动
-      handleCurrentChange(val) {
-        this.pages = val
-        this.upApp(this.pages, this.rows)
-      },
-      // 改动总页数
-      handleSizeChange(val) {
-        this.rows = val
-        this.upApp(this.pages, this.rows)
-      },
-      // 添加
-      addStatic() {
-        this.$store.dispatch('addRole', {
-          status: (this.form.status == true ? 1 : 2),
-          appKey: (!this.Apps ? this.form.appKey : this.Apps.appKey),
+        .then(req => {
+          this.total = req.total;
+          this.updataLists();
+          this.$store
+            .dispatch("loadAuthAppListApp", 1)
+            .then(req => {
+              console.log(req);
+              this.options = this.$store.state.roles.AppList.map(view => {
+                return {
+                  value: view.appKey,
+                  label: view.name
+                };
+              });
+              this.listLoading = false;
+            })
+            .catch(() => {
+              this.listLoading = false;
+            });
+        })
+        .catch(() => {
+          this.listLoading = false;
+        });
+    },
+    // 分页改动
+    handleCurrentChange(val) {
+      this.pages = val;
+      this.upApp(this.pages, this.rows);
+    },
+    // 改动总页数
+    handleSizeChange(val) {
+      this.rows = val;
+      this.upApp(this.pages, this.rows);
+    },
+    // 添加
+    addStatic() {
+      
+      // for (key in this.form){
+      //   console.log(this.form[key])
+      //   if(this.form[key].length == 0){
+      //     this.$message
+      //     locks = true
+      //     break;
+      //   }
+      // }
+      console.log(attributeCount(this.form));
+      if (attributeCount(this.form) != 4) return this.$message({
+            type: "info",
+            message: "所填项不能为空！"
+          });
+      this.$store
+        .dispatch("addRoleX", {
+          status: this.form.status == true ? 1 : 2,
+          appKey: !this.Apps ? this.form.appKey : this.Apps.appKey,
           name: this.form.name,
           roleCode: this.form.roleCode,
           description: this.form.description
-        }).then(() => {
+        })
+        .then(() => {
           this.$message({
-            message: this.form.name + ' - 添加成功',
-            type: 'success'
-          })
-          this.searchFrom.rules = (!this.Apps ? this.form.appKey : this.Apps.appKey)
-          this.upApp()
+            message: this.form.name + " - 添加成功",
+            type: "success"
+          });
+          this.searchFrom.rules = !this.Apps
+            ? this.form.appKey
+            : this.Apps.appKey;
+          this.upApp();
           this.form = {
             status: true
-          }
+          };
           this.dialogTableVisible = false;
-          this.pullData()
-        })
-      },
-      // 删除
-      confirmDel(row) {
-        this.$confirm('此操作将永久删除角色：' + row.name + ' , 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$store.dispatch('deletAuthRole', {
+          this.pullData();
+        });
+    },
+    // 删除
+    confirmDel(row) {
+      this.$confirm(
+        "此操作将永久删除角色：" + row.name + " , 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
+        .then(() => {
+          this.$store.dispatch("deletAuthRoleX", {
             id: row.id
-          })
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
           });
-          this.upApp()
-        }).catch(() => {
           this.$message({
-            type: 'info',
-            message: '已取消删除'
+            type: "success",
+            message: "删除成功!"
+          });
+          this.upApp();
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
           });
         });
-      },
-      // 取消修改
-      cancelEdit(row) {
-        row.title = row.originalTitle
-        row.edit = false
-      },
-      // 修改
-      confirmEdit(row) {
-        // 编辑App内容
-        this.$store.dispatch('updateRole', {
+    },
+    // 取消修改
+    cancelEdit(row) {
+      row.title = row.originalTitle;
+      row.edit = false;
+    },
+    // 修改
+    confirmEdit(row) {
+      let locks = false;
+          for (let key in row){
+        console.log(row[key])
+        if(row[key].length == 0){
+          this.$message({
+            type: "info",
+            message: "所填项不能为空！"
+          });
+          locks = true
+          break;
+        }
+      }
+      if(locks) return
+      // 编辑App内容
+      this.$store
+        .dispatch("updateRole", {
           id: row.id,
-          status: (row.switch ? 1 : 2),
+          status: row.switch ? 1 : 2,
           appKey: row.appKey,
           roleCode: row.roleCode,
           name: row.name,
           description: row.description
-        }).then(() => {
+        })
+        .then(() => {
           // 编辑完成后关闭选项卡并提示
-          row.edit = false
-          row.originalTitle = row.title
+          row.edit = false;
+          row.originalTitle = row.title;
           this.$message({
-            message: row.appKey + '修改成功',
-            type: 'success'
-          })
-          this.upApp()
-        }).catch(() => {
-          this.listLoading = false
+            message: row.appKey + "修改成功",
+            type: "success"
+          });
+          this.upApp();
         })
-
-      },
-      // 循环更新列表
-      updataLists() {
-        this.tableData = this.$store.state.userRoles.UserList.map(row => {
-          return {
-            originalTitle: row.appKey,
-            appKey: row.appKey,
-            appName: row.appName,
-            id: row.id,
-            name: row.name,
-            roleCode: row.roleCode,
-            description: row.description,
-            switch: (row.status == 1 ? true : false),
-            status: row.status,
-            edit: false,
-          }
-        })
-      },
-
+        .catch(() => {
+          this.listLoading = false;
+        });
     },
-    watch: {
-
+    // 循环更新列表
+    updataLists() {
+      this.tableData = this.$store.state.userRoles.UserList.map(row => {
+        return {
+          originalTitle: row.appKey,
+          appKey: row.appKey,
+          appName: row.appName,
+          id: row.id,
+          name: row.name,
+          roleCode: row.roleCode,
+          description: row.description,
+          switch: row.status == 1 ? true : false,
+          status: row.status,
+          edit: false
+        };
+      });
     }
-  };
-
+  },
+  watch: {}
+};
 </script>
 <style scoped lang="scss">
-  .edit-input {
-    padding-right: 100px;
-  }
+.edit-input {
+  padding-right: 100px;
+}
 
-  .cancel-btn {
-    position: absolute;
-    right: 15px;
-    top: 10px;
-  }
+.cancel-btn {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+}
 
-  .kingMon-right {
-    margin-right: 8px;
-  }
+.kingMon-right {
+  margin-right: 8px;
+}
 
-  .panel-group {
-    margin-top: 18px;
-    .card-panel-col {
-      margin-bottom: 32px;
-    }
-    .card-panel {
-      height: 108px;
-      cursor: pointer;
-      font-size: 12px;
-      position: relative;
-      overflow: hidden;
-      color: #666;
-      background: #fff;
-      box-shadow: 4px 4px 40px rgba(0, 0, 0, 0.05);
-      border-color: rgba(0, 0, 0, 0.05);
-      &:hover {
-        .card-panel-icon-wrapper {
-          color: #fff;
-        }
-        .icon-people {
-          background: #40c9c6;
-        }
-        .icon-message {
-          background: #36a3f7;
-        }
-        .icon-money {
-          background: #f4516c;
-        }
-        .icon-shoppingCard {
-          background: #34bfa3;
-        }
+.panel-group {
+  margin-top: 18px;
+  .card-panel-col {
+    margin-bottom: 32px;
+  }
+  .card-panel {
+    height: 108px;
+    cursor: pointer;
+    font-size: 12px;
+    position: relative;
+    overflow: hidden;
+    color: #666;
+    background: #fff;
+    box-shadow: 4px 4px 40px rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.05);
+    &:hover {
+      .card-panel-icon-wrapper {
+        color: #fff;
       }
       .icon-people {
-        color: #40c9c6;
+        background: #40c9c6;
       }
       .icon-message {
-        color: #36a3f7;
+        background: #36a3f7;
       }
       .icon-money {
-        color: #f4516c;
+        background: #f4516c;
       }
       .icon-shoppingCard {
-        color: #34bfa3;
+        background: #34bfa3;
       }
-      .card-panel-icon-wrapper {
-        float: left;
-        margin: 14px 0 0 14px;
-        padding: 16px;
-        transition: all 0.38s ease-out;
-        border-radius: 6px;
+    }
+    .icon-people {
+      color: #40c9c6;
+    }
+    .icon-message {
+      color: #36a3f7;
+    }
+    .icon-money {
+      color: #f4516c;
+    }
+    .icon-shoppingCard {
+      color: #34bfa3;
+    }
+    .card-panel-icon-wrapper {
+      float: left;
+      margin: 14px 0 0 14px;
+      padding: 16px;
+      transition: all 0.38s ease-out;
+      border-radius: 6px;
+    }
+    .card-panel-icon {
+      float: left;
+      font-size: 48px;
+    }
+    .card-panel-description {
+      float: right;
+      font-weight: bold;
+      margin: 26px;
+      margin-left: 0px;
+      .card-panel-text {
+        line-height: 18px;
+        color: rgba(0, 0, 0, 0.45);
+        font-size: 16px;
+        margin-bottom: 12px;
       }
-      .card-panel-icon {
-        float: left;
-        font-size: 48px;
-      }
-      .card-panel-description {
-        float: right;
-        font-weight: bold;
-        margin: 26px;
-        margin-left: 0px;
-        .card-panel-text {
-          line-height: 18px;
-          color: rgba(0, 0, 0, 0.45);
-          font-size: 16px;
-          margin-bottom: 12px;
-        }
-        .card-panel-num {
-          font-size: 20px;
-        }
+      .card-panel-num {
+        font-size: 20px;
       }
     }
   }
-
+}
 </style>

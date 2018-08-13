@@ -1,44 +1,44 @@
-import axios from 'axios'
-import {
-  Message
-} from 'element-ui'
-import Cookies from 'js-cookie'
-import store from '@/store'
-import {
-  getToken
-} from '@/utils/auth'
+import axios from "axios";
+import { Message } from "element-ui";
+import Cookies from "js-cookie";
+import store from "@/store";
+import { getToken } from "@/utils/auth";
 // import KingMonLoading from '../utils/loadings'
 // console.log(layui,"laui")
-axios.defaults.withCredentials = true
+axios.defaults.withCredentials = true;
 // create an axios instance
 const service = axios.create({
-  baseURL: 'test', // api的base_url
+  baseURL: process.env.BASE_API, // api的base_url
   timeout: 5000, // request timeout
   headers: {
-    'X-Requested-With': 'XMLHttpRequest'
+    "X-Requested-With": "XMLHttpRequest"
   },
   withCredentials: true
-})
+});
 // request interceptor
-service.interceptors.request.use(config => {
-  // KingMonLoading('create')
-  // KingMonLoading('create')
-  // Do something before request is sent
-  if (store.getters.token) {
-    config.headers['X-Token'] = getToken()
-    config.headers['Accept'] = 'application/json, text/javascript, */*; q=0.01'
-    config.headers['Connection'] = 'keep-alive'
-    config.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
-    config.headers['Accept'] = 'application/json, text/javascript, */*; q=0.01'
+service.interceptors.request.use(
+  config => {
+    const { _setMock } = config.params || "";
+    if (_setMock != undefined) {
+      config.baseURL = "";
+    }
+    if (store.getters.token) {
+      config.headers["X-Token"] = getToken();
+      config.headers["Accept"] =
+        "application/json, text/javascript, */*; q=0.01";
+      config.headers["Content-Type"] =
+        "application/x-www-form-urlencoded; charset=UTF-8";
+    }
+    return config;
+  },
+  error => {
+    // Do something with request error
+    console.log(error); // for debug
+    Promise.reject(error);
   }
-  return config
-}, error => {
-  // Do something with request error
-  console.log(error) // for debug
-  Promise.reject(error)
-})
-service.credentials = true
-service.defaults.withCredentials = true
+);
+service.credentials = true;
+service.defaults.withCredentials = true;
 
 // respone interceptor
 service.interceptors.response.use(
@@ -51,57 +51,57 @@ service.interceptors.response.use(
    */
   response => {
     // KingMonLoading('remove')
-    const body = response.data
+    const body = response.data;
     if (body.statusCode === 200 || body.statusCode === undefined) {
-      return response
+      return response;
     }
     if (body.statusCode === 300) {
       Message({
         message: body.message,
-        type: 'error',
+        type: "error",
         duration: 5 * 1000
-      })
+      });
     }
     if (body.statusCode === 301) {
-      if (body.message === '未登录') {
+      if (body.message === "未登录") {
         Message({
           message: body.message,
-          type: 'error',
+          type: "error",
           duration: 5 * 1000
-        })
-        Cookies.remove('Admin-Token')
-        location.reload()
+        });
+        Cookies.remove("Admin-Token");
+        location.reload();
       }
     }
     if (body.statusCode === 303) {
       Message({
         message: body.message,
-        type: 'error',
+        type: "error",
         duration: 5 * 1000
-      })
+      });
     }
     if (body.statusCode === 401) {
       Message({
         message: body.message,
-        type: 'error',
+        type: "error",
         duration: 5 * 1000
-      })
+      });
     }
     if (body.statusCode === 402) {
       Message({
         message: body.message,
-        type: 'error',
+        type: "error",
         duration: 5 * 1000
-      })
+      });
     }
     if (body.statusCode === 500) {
       Message({
         message: body.message,
-        type: 'error',
+        type: "error",
         duration: 5 * 1000
-      })
+      });
     }
-    throw body.message
+    throw body.message;
     // const res = response.data
     // if (res.code !=== 20000) {
     //   Message({
@@ -130,11 +130,13 @@ service.interceptors.response.use(
   },
   error => {
     Message({
-      message: 'xxxxxxxx',
-      type: 'error',
+      message: "暂无访问",
+      type: "error",
       duration: 5 * 1000
-    })
-    return Promise.reject(error)
-  })
+    });
+    sessionStorage.removeItem("InCode")
+    return Promise.reject(error);
+  }
+);
 
-export default service
+export default service;

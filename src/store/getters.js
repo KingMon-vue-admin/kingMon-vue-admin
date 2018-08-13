@@ -15,8 +15,18 @@ const getters = {
   addRouters: state => state.permission.addRouters,
   errorLogs: state => state.errorLog.logs,
   routers_menus: state => state.user.routers,
+  Student: () => {
+    if(sessionStorage.getItem('Student')){
+      return JSON.parse(sessionStorage.getItem('Student'))
+    }
+  },
+  KeysSchool: () => {
+    if(sessionStorage.getItem('KeysSchool')){
+      return JSON.parse(sessionStorage.getItem('KeysSchool'))
+    }
+  },
   Apps: () => {
-    if (sessionStorage.getItem('user') != 'admin') {
+    if (sessionStorage.getItem('user') !== 'admin') {
       return {
         appKey: 'APP_ROOT',
         id: 9,
